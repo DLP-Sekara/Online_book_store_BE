@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import bookRoute from "./src/routes/bookRoute";
+import orderRoute from "./src/routes/orderRoute";
+import customerRoute from "./src/routes/customerRoute";
 
 dotenv.config();
 
@@ -20,6 +23,11 @@ app.use(
   })
 );
 app.use(express.urlencoded({ extended: true }));
+
+//routes
+app.use('/book',bookRoute);
+app.use('/customer',customerRoute);
+app.use('/order',orderRoute);
 
 // MongoDB connection
 const url: any = process.env.DATABASE_URL;
