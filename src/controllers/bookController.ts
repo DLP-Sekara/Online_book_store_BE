@@ -21,7 +21,8 @@ export const getAllBook = async (req: Request, res: Response): Promise<any> => {
 export const saveBook = async (req: Request, res: Response): Promise<any> => {
   try {
     const bookImage = req?.file?.originalname;
-    const book = await saveBookService(req.body, bookImage);
+    //const book = await saveBookService(req.body, bookImage);
+    const book = await saveBookService(req.body);
     res.send(book);
   } catch (error) {
     res.status(400);
@@ -30,7 +31,6 @@ export const saveBook = async (req: Request, res: Response): Promise<any> => {
 
 export const updateBook = async (req: Request, res: Response): Promise<any> => {
   try {
-    console.log("contro -", req.body.book);
     const book = await updateBookService(req.body);
     res.send(book);
   } catch (error) {
@@ -40,7 +40,7 @@ export const updateBook = async (req: Request, res: Response): Promise<any> => {
 
 export const searchBook = async (req: Request, res: Response): Promise<any> => {
   try {
-    const book = await searchBookService(req.params.book_name);
+    const book = await searchBookService(req.params.title);
     res.send(book);
   } catch (error) {
     res.status(400);
@@ -50,7 +50,6 @@ export const searchBook = async (req: Request, res: Response): Promise<any> => {
 export const fetchBook = async (req: Request, res: Response): Promise<any> => {
   try {
     const book = await fetchBookService(req.params.bid);
-    console.log(book);
     res.send(book);
   } catch (error) {
     res.status(400);

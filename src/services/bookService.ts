@@ -10,25 +10,27 @@ export const getAllBookService = async (): Promise<object | string> => {
   }
 };
 
-export const saveBookService = async (
-  data: any,
-  bookImage: any
-): Promise<object | string> => {
+export const saveBookService = async (data: any): Promise<object | string> => {
   try {
     const highestBid = await Book.findOne()
-      .sort("-book_id")
+      .sort("-book_id") // Use descending order
       .select("book_id")
       .lean();
-    const newBid: any = highestBid ? highestBid?.book_id + 1 : 1;
+    const newBid = highestBid ? Number(highestBid?.book_id) + 1 : 1;
 
     const book = new Book({
-      bid: newBid,
-      book_name: data.book_name,
-      book_author: data.book_author,
-      book_qty: data.book_qty,
-      book_price: data.book_price,
-      book_type: data.book_type,
-      book_image: bookImage,
+      book_id: newBid,
+      title: data.title,
+      description: data.description,
+      author: data.author,
+      ISBN_number: data.ISBN_number,
+      price: data.price,
+      type: data.type,
+      cover_image: data.cover_image,
+      status: data.status,
+      publisher: data.publisher,
+      pub_year: data.pub_year,
+      qty: data.qty,
     });
 
     const saveResponse = await book.save();
@@ -55,7 +57,7 @@ export const searchBookService = async (
   data: string
 ): Promise<object | string> => {
   try {
-    const searchedBook = await Book.find({ book_name: data });
+    const searchedBook = await Book.find({ title: data });
     return searchedBook;
   } catch (error) {
     return "error :" + error;
@@ -66,7 +68,7 @@ export const fetchBookService = async (
   data: string
 ): Promise<object | string> => {
   try {
-    const fetchedBook = await Book.find({ bid: data });
+    const fetchedBook = await Book.find({ book_id: data });
     return fetchedBook;
   } catch (error) {
     return "error :" + error;

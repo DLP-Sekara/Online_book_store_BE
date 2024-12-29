@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import { config } from '../utils/config';
 
 export const permissions = async (req: Request,res: Response,next: NextFunction): Promise<any> => {
-  console.log('request has come...!');
   try {
     const token = req.cookies.accessToken;
     if (!token) {

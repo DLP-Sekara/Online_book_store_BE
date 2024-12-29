@@ -25,9 +25,9 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 
 //routes
-app.use('/book',bookRoute);
+app.use("/book", bookRoute);
 app.use('/customer',customerRoute);
-app.use('/order',orderRoute);
+// app.use('/order',orderRoute);
 
 // MongoDB connection
 const url: any = process.env.DATABASE_URL;
