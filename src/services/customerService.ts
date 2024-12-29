@@ -30,33 +30,30 @@ export const saveCustomerService = async (
 
     //auto increment cid
     const highestCid = await Customer.findOne()
-      .sort("-cid")
-      .select("cid")
+      .sort("-cus_id")
+      .select("cus_id")
       .lean();
-    const newCid = highestCid ? highestCid.cid + 1 : 1;
+    const newCid = highestCid ? Number(highestCid.cus_id) + 1 : 1;
 
     //bcrypt password
     const tempPassword = data.password;
-    const hash = await bcrypt.hash(tempPassword, 10);
-    //set Data
-    dataObj._id = data._id;
-    dataObj.cid = newCid;
+    const hash: string = await bcrypt.hash(tempPassword, 10);
+
+    dataObj.cus_id = newCid;
+    dataObj.username = data.username;
     dataObj.email = data.email;
-    dataObj.name = data.name;
-    dataObj.userRoll = data.userRoll;
     dataObj.password = hash;
+    dataObj.role = "customer";
 
     const saveResponse = await dataObj.save();
-    return saveResponse;
+    return { message: "Account created successfully !", saveResponse };
   } catch (error) {
     return error;
   }
 };
 
 //login customer
-export const getCustomer = async (
-  data: CustomerModel
-): Promise<CustomerModel | null | object> => {
+export const logInCustomer = async (data: CustomerModel): Promise<any> => {
   try {
     const findCustomer = await Customer.findOne({ email: data.email });
     if (findCustomer) {
@@ -108,14 +105,13 @@ export const getUserDetails = async (userAccToken: string) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       const userEmail = verifyAccToken.email;
-      console.log(userEmail);
       const findCustomer = await Customer.findOne({ email: userEmail });
       // const secret = config.jwt_secret_key;
       if (findCustomer !== null) {
         const userData = {
           email: findCustomer.email,
-          name: findCustomer.name,
-          userRoll: findCustomer.userRoll,
+          name: findCustomer.username,
+          userRoll: findCustomer.role,
         };
         return {
           userData,
