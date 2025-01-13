@@ -1,8 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 const bookSchema = new mongoose.Schema({
   book_id: {
-    type: String,
-    required: true,
+    type: Schema.Types.ObjectId,
   },
   title: {
     type: String,
@@ -30,14 +29,14 @@ const bookSchema = new mongoose.Schema({
     type: String,
   },
   status: {
-    type: String,
+    type: Number,
     required: true,
   },
   publisher: {
     type: String,
   },
   pub_year: {
-    type: Number,
+    type: String,
   },
   qty: {
     type: Number,

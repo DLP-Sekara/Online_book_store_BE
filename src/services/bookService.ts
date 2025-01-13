@@ -1,87 +1,105 @@
 import Book from "../models/book.model";
-import { BookModel } from "../utils/interface";
+import BookRepository from "../repositories/BookRepository";
+import {
+  BookDetails,
+  bookIdInterface,
+  BookModel,
+} from "../utils/interfaces/bookInterface";
+import { ApiResponse } from "../utils/interfaces/commonInterface";
 
-export const getAllBookService = async (): Promise<object | string> => {
-  try {
-    const book = await Book.find();
-    return book;
-  } catch (error) {
-    return "error :" + error;
-  }
+const BookService = {
+  getAllBookService: async (data: BookDetails): Promise<ApiResponse<any[]>> => {
+    try {
+      // const books = await BookRepository.getAllBookRepo(data);
+      // return {
+      //   success: true,
+      //   message: "Books retrieved successfully",
+      //   data: books,
+      // };
+      return BookRepository.getAllBookRepo(data);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  saveBookService: async (data: BookModel): Promise<ApiResponse<any[]>> => {
+    try {
+      // const response = await BookRepository.saveBookRepo(data);
+      // return {
+      //   success: true,
+      //   message: "Book added successfully",
+      //   data: response,
+      // };
+      return await BookRepository.saveBookRepo(data);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  updateBookService: async (data: BookModel): Promise<ApiResponse<any[]>> => {
+    try {
+      // const response = await BookRepository.updateBookRepo(data);
+      // return {
+      //   success: true,
+      //   message: "Book updated successfully",
+      //   data: response,
+      // };
+      return await BookRepository.updateBookRepo(data);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  fetchBookService: async (
+    data: bookIdInterface
+  ): Promise<ApiResponse<any[]>> => {
+    try {
+      // const response = await BookRepository.fetchBookRepo(data);
+      // return {
+      //   success: true,
+      //   message: "Book fetched successfully",
+      //   data: response,
+      // };
+      return await BookRepository.fetchBookRepo(data);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  deleteBookService: async (
+    data: bookIdInterface
+  ): Promise<ApiResponse<any[]>> => {
+    try {
+      // const response = await BookRepository.deleteBookRepo(data);
+      // return {
+      //   success: true,
+      //   message: "Book deleted successfully",
+      //   data: response,
+      // };
+      return await BookRepository.deleteBookRepo(data);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
 };
-
-export const saveBookService = async (data: any): Promise<object | string> => {
-  try {
-    const highestBid = await Book.findOne()
-      .sort("-book_id") // Use descending order
-      .select("book_id")
-      .lean();
-    const newBid = highestBid ? Number(highestBid?.book_id) + 1 : 1;
-
-    const book = new Book({
-      book_id: newBid,
-      title: data.title,
-      description: data.description,
-      author: data.author,
-      ISBN_number: data.ISBN_number,
-      price: data.price,
-      type: data.type,
-      cover_image: data.cover_image,
-      status: data.status,
-      publisher: data.publisher,
-      pub_year: data.pub_year,
-      qty: data.qty,
-    });
-
-    const saveResponse = await book.save();
-    return { message: "Book added successfully !", saveResponse };
-  } catch (error) {
-    console.log(error);
-    return "error :" + error;
-  }
-};
-
-export const updateBookService = async (
-  data: BookModel
-): Promise<object | string> => {
-  try {
-    const { _id, ...updateData } = data;
-    const updateResponse = await Book.findOneAndUpdate({ _id }, updateData);
-    return { message: "Book Update successfuly !", updateResponse };
-  } catch (error) {
-    return "error :" + error;
-  }
-};
-
-export const searchBookService = async (
-  data: string
-): Promise<object | string> => {
-  try {
-    const searchedBook = await Book.find({ title: data });
-    return searchedBook;
-  } catch (error) {
-    return "error :" + error;
-  }
-};
-
-export const fetchBookService = async (
-  data: string
-): Promise<object | string> => {
-  try {
-    const fetchedBook = await Book.find({ book_id: data });
-    return fetchedBook;
-  } catch (error) {
-    return "error :" + error;
-  }
-};
-
-export const deleteBookService = async (
-  data: string
-): Promise<object | string> => {
-  try {
-    const deleteResponse = await Book.findByIdAndDelete(data);
-    return { message: "Book Deleted successfuly !", deleteResponse };
-  } catch (error) {
-    return "error :" + error;
-  }
-};
+export default BookService;
