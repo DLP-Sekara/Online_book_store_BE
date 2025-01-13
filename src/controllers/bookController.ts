@@ -1,66 +1,197 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from "express";
-import {
-  deleteBookService,
-  fetchBookService,
-  getAllBookService,
-  saveBookService,
-  searchBookService,
-  updateBookService,
-} from "../services/bookService";
+import { Request, Response, NextFunction } from "express";
+import BookService from "../services/BookService";
+import { ApiResponse } from "../utils/interfaces/commonInterface";
 
-export const getAllBook = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const book = await getAllBookService();
-    res.send(book);
-  } catch (error) {
-    res.status(400);
-  }
+const BookController = {
+  getAllBook: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    const { page, perPage, sort, bookName }: any = req.query;
+    try {
+      const parsedPage = parseInt(page, 10) || 1;
+      const parsedPerPage = parseInt(perPage, 10) || 10;
+      const response: ApiResponse<any[]> = await BookService?.getAllBookService(
+        {
+          page: parsedPage,
+          perPage: parsedPerPage,
+          sort,
+          bookName,
+        }
+      );
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  saveBook: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const {
+        title,
+        description,
+        author,
+        ISBN_number,
+        price,
+        type,
+        cover_image,
+        status,
+        publisher,
+        pub_year,
+        qty,
+      } = req?.body;
+
+      if (!title) {
+        return res.status(200).json({
+          success: false,
+          message: "Book Name Required!",
+          data: null,
+        });
+      }
+      const response: ApiResponse<any[]> = await BookService?.saveBookService({
+        title: title.trim(),
+        description: description,
+        author: author,
+        ISBN_number: ISBN_number,
+        price: price,
+        type: type,
+        cover_image: cover_image,
+        status: status,
+        publisher: publisher,
+        pub_year: pub_year,
+        qty: qty,
+      });
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateBook: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const {
+        bookId,
+        title,
+        description,
+        author,
+        ISBN_number,
+        price,
+        type,
+        cover_image,
+        status,
+        publisher,
+        pub_year,
+        qty,
+      } = req?.body;
+
+      if (!title || !bookId) {
+        return res.status(200).json({
+          success: false,
+          message: "Book ID & Book Name Required!",
+          data: null,
+        });
+      }
+      const response: ApiResponse<any[]> = await BookService?.updateBookService(
+        {
+          _id: bookId,
+          title: title.trim(),
+          description: description,
+          author: author,
+          ISBN_number: ISBN_number,
+          price: price,
+          type: type,
+          cover_image: cover_image,
+          status: status,
+          publisher: publisher,
+          pub_year: pub_year,
+          qty: qty,
+        }
+      );
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  fetchBook: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { bookId }: any = req?.query;
+
+      if (!bookId) {
+        return res.status(200).json({
+          success: false,
+          message: "Book ID Required!",
+          data: null,
+        });
+      }
+      const response: ApiResponse<any[]> = await BookService?.fetchBookService({
+        _id: bookId,
+      });
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  deleteBook: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { bookId }: any = req?.query;
+
+      if (!bookId) {
+        return res.status(200).json({
+          success: false,
+          message: "Book ID Required!",
+          data: null,
+        });
+      }
+      const response: ApiResponse<any[]> = await BookService?.deleteBookService(
+        {
+          _id: bookId,
+        }
+      );
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
-export const saveBook = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const bookImage = req?.file?.originalname;
-    //const book = await saveBookService(req.body, bookImage);
-    const book = await saveBookService(req.body);
-    res.send(book);
-  } catch (error) {
-    res.status(400);
-  }
-};
-
-export const updateBook = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const book = await updateBookService(req.body);
-    res.send(book);
-  } catch (error) {
-    res.status(400);
-  }
-};
-
-export const searchBook = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const book = await searchBookService(req.params.title);
-    res.send(book);
-  } catch (error) {
-    res.status(400);
-  }
-};
-
-export const fetchBook = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const book = await fetchBookService(req.params.bid);
-    res.send(book);
-  } catch (error) {
-    res.status(400);
-  }
-};
-
-export const deleteBook = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const book = await deleteBookService(req.params.id);
-    res.send(book);
-  } catch (error) {
-    res.status(400);
-  }
-};
+export default BookController;

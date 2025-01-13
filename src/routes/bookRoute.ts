@@ -1,13 +1,7 @@
 import express from "express";
-import {
-  deleteBook,
-  fetchBook,
-  getAllBook,
-  saveBook,
-  searchBook,
-  updateBook,
-} from "../controllers/bookController";
+
 import multer from "multer";
+import BookController from "../controllers/BookController";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -24,12 +18,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const route = express.Router();
-route.get("/", getAllBook);
-route.get("/:title", searchBook);
-route.get("/details/:bid", fetchBook);
-// route.post('/',upload.single('book_image'), saveBook);
-route.post("/", saveBook);
-route.put("/", updateBook);
-route.delete("/delete/:id", deleteBook);
+route.get("/all", BookController?.getAllBook);
+route.get("/view", BookController?.fetchBook);
+route.post("/create", BookController?.saveBook);
+route.put("/update", BookController?.updateBook);
+route.delete("/delete", BookController?.deleteBook);
 
 export default route;
