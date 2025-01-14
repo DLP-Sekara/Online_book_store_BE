@@ -1,23 +1,30 @@
 import Book from "../models/book.model";
-import { bookIdInterface, BookModel } from "../utils/interfaces/bookInterface";
+import {
+  BookDetails,
+  bookIdInterface,
+  BookModel,
+} from "../utils/interfaces/bookInterface";
 
 const BookRepository = {
-  getAllBookRepo: async (data: any): Promise<any> => {
+  getAllBookRepo: async (data: BookDetails): Promise<any> => {
     try {
-      const { page, perPage, sort, bookName } = data;
-
+      const { page, perPage, sort, bookName }: any = data;
       let query: any = {};
       if (bookName) {
-        query.bookName = { $regex: bookName, $options: "i" };
+        query.title = { $regex: bookName, $options: "i" };
       }
 
-      let sortCriteria = {};
-      if (sort == 1) {
-        sortCriteria = { updatedAt: -1 };
-      } else if (sort == 2) {
-        sortCriteria = { updatedAt: 1 };
-      } else {
-        sortCriteria = { updatedAt: -1 };
+      let sortCriteria: any = {};
+      switch (sort) {
+        case 1:
+          sortCriteria = { updatedAt: -1 }; // Descending order
+          break;
+        case 2:
+          sortCriteria = { updatedAt: 1 }; // Ascending order
+          break;
+        default:
+          sortCriteria = { updatedAt: -1 }; // Default to descending
+          break;
       }
 
       const skip = (page - 1) * perPage;
@@ -36,7 +43,7 @@ const BookRepository = {
         };
       }
 
-      const processLeadTags = async (allBooks: any) =>
+      const processBooks = async (allBooks: any) =>
         Promise.all(
           allBooks.map(async (book: any) => ({
             bookId: book?._id,
@@ -54,7 +61,7 @@ const BookRepository = {
           }))
         );
 
-      const processedLeadTags = await processLeadTags(allBooks);
+      const processedBooks = await processBooks(allBooks);
       const totalCount = await Book.countDocuments(query);
       const totalPages = Math.ceil(totalCount / perPage);
       return {
@@ -64,7 +71,7 @@ const BookRepository = {
           page,
           totalPages,
           totalCount,
-          books: processedLeadTags,
+          books: processedBooks,
         },
       };
     } catch (error: any) {
@@ -128,7 +135,7 @@ const BookRepository = {
       if (!updatedBook) {
         return {
           success: false,
-          message: "Tag Not Found Or Could Not Be Updated!",
+          message: "Book Not Found Or Could Not Be Updated!",
           data: null,
         };
       }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from "express";
-import BookService from "../services/BookService";
 import { ApiResponse } from "../utils/interfaces/commonInterface";
+import BookService from "../services/bookService";
 
 const BookController = {
   getAllBook: async (
@@ -13,11 +13,12 @@ const BookController = {
     try {
       const parsedPage = parseInt(page, 10) || 1;
       const parsedPerPage = parseInt(perPage, 10) || 10;
+      const parsedSort = parseInt(sort) || 1;
       const response: ApiResponse<any[]> = await BookService?.getAllBookService(
         {
           page: parsedPage,
           perPage: parsedPerPage,
-          sort,
+          sort: parsedSort,
           bookName,
         }
       );

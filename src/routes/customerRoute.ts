@@ -1,11 +1,13 @@
-import express from 'express';
-import { deleteCustomer, getAllCustomer, loginCustomer, logout, refresh, saveCustomer, userDetail } from '../controllers/customerController';
-const route=express.Router();
-route.get('/all', getAllCustomer);
-route.post("/signup", saveCustomer);
-route.post("/signin", loginCustomer);
-route.get('/logout', logout);
-route.post('/refresh', refresh);
-route.get('/userDetail', userDetail);
-route.delete('/delete/:id', deleteCustomer);
-export default route; 
+import express from "express";
+import CustomerController from "../controllers/customerController";
+const route = express.Router();
+route.get("/all", CustomerController?.getAllCustomer);
+route.post("/signup", CustomerController?.saveCustomer);
+route.post("/signin", CustomerController?.loginCustomer);
+route.get("/logout", CustomerController?.logout);
+route.post("/refresh", CustomerController?.refresh);
+route.get("/details", CustomerController?.userDetail);
+route.put("/update", CustomerController?.userDetailUpdate);
+route.delete("/delete", CustomerController?.deleteCustomer);
+
+export default route;

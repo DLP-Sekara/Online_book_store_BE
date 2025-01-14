@@ -18,7 +18,7 @@ export interface BookDetails {
   page?: number;
   perPage?: number;
   sort?: number;
-  bookName?: string;
+  bookName?: string | undefined;
 }
 
 export interface bookIdInterface {
