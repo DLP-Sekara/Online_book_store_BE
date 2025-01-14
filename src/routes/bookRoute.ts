@@ -1,7 +1,6 @@
 import express from "express";
-
 import multer from "multer";
-import BookController from "../controllers/BookController";
+import BookController from "../controllers/bookController";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
