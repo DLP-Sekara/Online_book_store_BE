@@ -173,7 +173,6 @@ const CustomerRepository = {
       const existCustomer = await Customer.findOne({
         _id: { $ne: data?._id },
       });
-      console.log(data);
       if (!existCustomer) {
         return {
           success: false,
@@ -185,7 +184,6 @@ const CustomerRepository = {
         { _id: data?._id },
         data
       );
-      console.log(updatedCustomer);
       if (!updatedCustomer) {
         return {
           success: false,
