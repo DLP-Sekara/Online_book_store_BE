@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import bookRoute from "./src/routes/bookRoute";
 import orderRoute from "./src/routes/orderRoute";
 import customerRoute from "./src/routes/customerRoute";
+import adminRoute from "./src/routes/adminRoute";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 //routes
 app.use("/book", bookRoute);
 app.use("/customer", customerRoute);
+app.use("/admin", adminRoute);
 // app.use('/order',orderRoute);
 
 // MongoDB connection

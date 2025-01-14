@@ -18,25 +18,30 @@ const orderDetailSchema = new mongoose.Schema({
     required: true,
   },
 });
-const orderSchema = new mongoose.Schema({
-  order_id: {
-    type: String,
-    required: true,
+const orderSchema = new mongoose.Schema(
+  {
+    order_id: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
+    },
+    order_details: [orderDetailSchema],
   },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  time: {
-    type: String,
-    required: true,
-  },
-  customer_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
-    required: true,
-  },
-  order_details: [orderDetailSchema],
-});
+  {
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
+  }
+);
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
