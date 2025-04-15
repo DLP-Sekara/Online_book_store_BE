@@ -15,3 +15,18 @@ export interface OrderModel {
   shippingAddress: string;
   orderDate: Date;
 }
+
+export interface OrderDetails {
+  page?: number;
+  perPage?: number;
+  sort?: number;
+  customerName?: string | undefined;
+}
+
+export interface OrderIdInterface {
+  _id?: Types.ObjectId;
+}
+
+export interface OrderEmailInterface {
+  email: string;
+}

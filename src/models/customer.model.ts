@@ -1,9 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 const customerSchema = new mongoose.Schema(
   {
-    _id: {
-      type: Schema.Types.ObjectId,
-    },
     username: {
       type: String,
       required: true,

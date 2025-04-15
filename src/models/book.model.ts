@@ -1,9 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 const bookSchema = new mongoose.Schema(
   {
-    book_id: {
-      type: Schema.Types.ObjectId,
-    },
     title: {
       type: String,
       required: true,

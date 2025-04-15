@@ -23,7 +23,6 @@ const CustomerService = {
       };
     }
   },
-
   saveCustomerService: async (
     data: CustomerRegisterModel
   ): Promise<ApiResponse<any[]>> => {
@@ -37,7 +36,6 @@ const CustomerService = {
       };
     }
   },
-
   logInCustomer: async (
     data: CustomerLoginModel
   ): Promise<ApiResponse<any[]>> => {
@@ -77,7 +75,6 @@ const CustomerService = {
       };
     }
   },
-
   getUserDetails: async (
     data: customerEmailInterface
   ): Promise<ApiResponse<any[]>> => {
@@ -91,7 +88,6 @@ const CustomerService = {
       };
     }
   },
-
   deleteCustomerService: async (
     data: customerIdInterface
   ): Promise<ApiResponse<any[]>> => {
