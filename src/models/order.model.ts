@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 const orderDetailSchema = new mongoose.Schema({
   book_id: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Book",
     required: true,
   },
@@ -20,21 +20,13 @@ const orderDetailSchema = new mongoose.Schema({
 });
 const orderSchema = new mongoose.Schema(
   {
-    order_id: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now,
-    },
-    time: {
-      type: String,
-      required: true,
-    },
     customer_id: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Customer",
+      required: true,
+    },
+    status: {
+      type: String,
       required: true,
     },
     order_details: [orderDetailSchema],

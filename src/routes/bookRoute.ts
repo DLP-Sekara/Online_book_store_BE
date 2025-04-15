@@ -19,8 +19,8 @@ const upload = multer({ storage: storage });
 const route = express.Router();
 route.get("/all", BookController?.getAllBook);
 route.get("/view", BookController?.fetchBook);
-route.post("/create", BookController?.saveBook);
-route.put("/update", BookController?.updateBook);
-route.delete("/delete", BookController?.deleteBook);
+route.post("/create", BookController?.saveBook); //auth,role
+route.put("/update", BookController?.updateBook); //auth,role
+route.delete("/delete", BookController?.deleteBook); //auth,role
 
 export default route;

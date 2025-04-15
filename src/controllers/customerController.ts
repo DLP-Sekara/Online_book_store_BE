@@ -117,7 +117,9 @@ const CustomerController = {
 
         res.cookie("accessToken", newAccessToken, {
           maxAge: 60 * 60,
-          httpOnly: true,
+          httpOnly: false, // allow reading from frontend (for debugging only)
+          secure: true, // required if you're using https
+          sameSite: "none",
         });
 
         res.cookie("refreshToken", newRefreshToken, {
@@ -125,6 +127,7 @@ const CustomerController = {
           httpOnly: true,
         });
       }
+
       return res.status(200).json({
         success: response?.success,
         message: response.message,
@@ -258,7 +261,9 @@ const CustomerController = {
         httpOnly: true,
       });
       res.status(200).json({
+        success: true,
         message: "Successfully logged out",
+        data: null,
       });
     } catch (error) {
       next(error);
