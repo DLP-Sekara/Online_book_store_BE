@@ -25,6 +25,10 @@ const customerSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    orderCount: {
+      type: Number,
+      required: false,
+    },
     role: {
       type: String,
       enum: ["customer", "admin"],

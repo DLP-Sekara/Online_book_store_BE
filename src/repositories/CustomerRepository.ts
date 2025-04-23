@@ -48,13 +48,14 @@ const CustomerRepository = {
       const processCustomers = async (allCustomers: any) =>
         Promise.all(
           allCustomers.map(async (customer: any) => ({
-            id: customer?._id,
-            username: customer?.username,
+            companyProfileId: customer?._id,
+            userName: customer?.username,
             email: customer?.email,
             dob: customer?.dob,
             mobile_number: customer?.mobile_number,
             address: customer?.address,
-            role: customer?.role,
+            roleName: customer?.role,
+            orderCount: customer?.orderCount,
           }))
         );
 
@@ -202,6 +203,7 @@ const CustomerRepository = {
           address: existCustomer.address,
           mobile_number: existCustomer.mobile_number,
           dob: existCustomer.dob,
+          orderCount: existCustomer.orderCount,
         },
       };
     } catch (error: any) {
@@ -226,16 +228,18 @@ const CustomerRepository = {
           success: true,
           message: "Customer Found Successfully!",
           data: {
-            id: existCustomer._id,
+            companyProfileId: existCustomer._id,
             email: existCustomer.email,
-            username: existCustomer.username,
-            role: existCustomer.role,
+            userName: existCustomer.username,
+            roleName: existCustomer.role,
             address: existCustomer.address,
             mobile_number: existCustomer.mobile_number,
             dob: existCustomer.dob,
+            orderCount: existCustomer.orderCount,
           },
         };
       }
+
       return {
         success: false,
         message: "Customer Not Found!",
