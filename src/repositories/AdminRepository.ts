@@ -1,8 +1,49 @@
 import Admin from "../models/admin.model";
-import { CustomerRegisterModel } from "../utils/interfaces/customerInterface";
+import {
+  CustomerDetails,
+  CustomerRegisterModel,
+} from "../utils/interfaces/customerInterface";
 import bcrypt from "bcrypt";
 
 const AdminRepository = {
+  getAllAdminsRepo: async (): Promise<any> => {
+    try {
+      const allAdmins = await Admin.find().lean();
+
+      if (!allAdmins) {
+        return {
+          success: true,
+          message: "No Admin users To Fetch!",
+          data: [],
+        };
+      }
+
+      const processCustomers = async (allAdmins: any) =>
+        Promise.all(
+          allAdmins.map(async (customer: any) => ({
+            companyProfileId: customer?._id,
+            userName: customer?.username,
+            email: customer?.email,
+            roleName: customer?.role,
+          }))
+        );
+
+      const processedCustomers = await processCustomers(allAdmins);
+      return {
+        success: true,
+        message: "Admin Users Fetched Successfully!",
+        data: {
+          admin_users: processedCustomers,
+        },
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
   saveAdminRepo: async (data: CustomerRegisterModel): Promise<any> => {
     try {
       const existCustomer = await Admin.findOne({
@@ -124,6 +165,31 @@ const AdminRepository = {
       };
     }
   },
+  
+  deleteAdminRepo: async (data: any): Promise<any> => {
+    try {
+      const admin = await Admin.findOne({ _id: data?._id }).lean();
+      if (!admin) {
+        return {
+          success: false,
+          message: "Can Not Fetch Admin Data!",
+          data: null,
+        };
+      }
+      await Admin.findByIdAndDelete({ _id: data?._id });
+      return {
+        success: true,
+        message: "Admin Deleted Successfully!",
+        data: null,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
 };
 
-export default AdminRepository
+export default AdminRepository;

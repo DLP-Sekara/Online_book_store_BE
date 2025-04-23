@@ -6,6 +6,24 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const adminController = {
+  //getAllAdmins
+  getAllAdmins: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const response: ApiResponse<any[]> =
+        await adminService?.getAllAdminService();
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   saveAdmin: async (
     req: Request,
     res: Response,
@@ -106,6 +124,7 @@ const adminController = {
       next(error);
     }
   },
+
   logout: async (
     req: Request,
     res: Response,
@@ -125,7 +144,9 @@ const adminController = {
         httpOnly: true,
       });
       res.status(200).json({
+        success: true,
         message: "Successfully logged out",
+        data: null,
       });
     } catch (error) {
       next(error);
@@ -175,6 +196,35 @@ const adminController = {
           data: response.data,
         });
       }
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  deleteAdmin: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { adminId }: any = req?.query;
+
+      if (!adminId) {
+        return res.status(200).json({
+          success: false,
+          message: "Admin ID Required!",
+          data: null,
+        });
+      }
+      const response: ApiResponse<any[]> =
+        await adminService?.deleteAdminService({
+          _id: adminId,
+        });
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
     } catch (error) {
       next(error);
     }
