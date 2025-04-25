@@ -8,6 +8,7 @@ export interface CustomerModel {
   mobile_number: string | undefined;
   address: string | undefined;
   role: string | undefined;
+  orderCount: number | undefined;
 }
 
 export interface CustomerRegisterModel {
@@ -15,6 +16,7 @@ export interface CustomerRegisterModel {
   email: string;
   password: string | any;
   role: string | undefined;
+  orderCount: number | undefined;
 }
 
 export interface CustomerLoginModel {

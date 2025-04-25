@@ -44,6 +44,7 @@ const adminController = {
           email: email,
           password: password,
           role: "admin",
+          orderCount: 0,
         }
       );
 
