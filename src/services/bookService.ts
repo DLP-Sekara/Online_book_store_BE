@@ -3,6 +3,7 @@ import {
   BookDetails,
   bookIdInterface,
   BookModel,
+  saveBook,
 } from "../utils/interfaces/bookInterface";
 import { ApiResponse } from "../utils/interfaces/commonInterface";
 
@@ -19,7 +20,7 @@ const BookService = {
     }
   },
 
-  saveBookService: async (data: BookModel): Promise<ApiResponse<any[]>> => {
+  saveBookService: async (data: saveBook): Promise<ApiResponse<any[]>> => {
     try {
       return await BookRepository.saveBookRepo(data);
     } catch (error: any) {
@@ -31,7 +32,7 @@ const BookService = {
     }
   },
 
-  updateBookService: async (data: BookModel): Promise<ApiResponse<any[]>> => {
+  updateBookService: async (data: saveBook): Promise<ApiResponse<any[]>> => {
     try {
       return await BookRepository.updateBookRepo(data);
     } catch (error: any) {

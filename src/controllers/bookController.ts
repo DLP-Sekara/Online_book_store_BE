@@ -9,7 +9,7 @@ const BookController = {
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    const { page, perPage, sort, bookName }: any = req.query;
+    const { page, perPage, sort, bookName, ISBN_number }: any = req.query;
     try {
       const parsedPage = parseInt(page, 10) || 1;
       const parsedPerPage = parseInt(perPage, 10) || 10;
@@ -20,6 +20,7 @@ const BookController = {
           perPage: parsedPerPage,
           sort: parsedSort,
           bookName,
+          ISBN_number,
         }
       );
       return res.status(200).json({
@@ -44,12 +45,18 @@ const BookController = {
         author,
         ISBN_number,
         price,
-        type,
-        cover_image,
+        types,
+        cover_images,
         status,
         publisher,
         pub_year,
         qty,
+        pdf_file,
+        isAwarded,
+        rating,
+        number_of_pages,
+        format,
+        reviews,
       } = req?.body;
 
       if (!title) {
@@ -59,18 +66,65 @@ const BookController = {
           data: null,
         });
       }
+
+      if (!author) {
+        return res.status(200).json({
+          success: false,
+          message: "Author Required!",
+          data: null,
+        });
+      }
+
+      if (!ISBN_number) {
+        return res.status(200).json({
+          success: false,
+          message: "ISBN Number Required!",
+          data: null,
+        });
+      }
+
+      if (!price) {
+        return res.status(200).json({
+          success: false,
+          message: "Price Required!",
+          data: null,
+        });
+      }
+
+      if (!status) {
+        return res.status(200).json({
+          success: false,
+          message: "Status Required!",
+          data: null,
+        });
+      }
+
+      if (!qty) {
+        return res.status(200).json({
+          success: false,
+          message: "Quantity Required!",
+          data: null,
+        });
+      }
+
       const response: ApiResponse<any[]> = await BookService?.saveBookService({
         title: title.trim(),
-        description: description,
-        author: author,
-        ISBN_number: ISBN_number,
-        price: price,
-        type: type,
-        cover_image: cover_image,
-        status: status,
-        publisher: publisher,
-        pub_year: pub_year,
-        qty: qty,
+        description,
+        author,
+        ISBN_number,
+        price,
+        types,
+        cover_images,
+        status,
+        publisher,
+        pub_year,
+        qty,
+        pdf_file,
+        isAwarded,
+        rating,
+        number_of_pages,
+        format,
+        reviews,
       });
       return res.status(200).json({
         success: response?.success,
@@ -95,12 +149,18 @@ const BookController = {
         author,
         ISBN_number,
         price,
-        type,
-        cover_image,
+        types,
+        cover_images,
         status,
         publisher,
         pub_year,
         qty,
+        pdf_file,
+        isAwarded,
+        rating,
+        number_of_pages,
+        format,
+        reviews,
       } = req?.body;
 
       if (!title || !bookId) {
@@ -114,16 +174,22 @@ const BookController = {
         {
           _id: bookId,
           title: title.trim(),
-          description: description,
-          author: author,
-          ISBN_number: ISBN_number,
-          price: price,
-          type: type,
-          cover_image: cover_image,
-          status: status,
-          publisher: publisher,
-          pub_year: pub_year,
-          qty: qty,
+          description,
+          author,
+          ISBN_number,
+          price,
+          types,
+          cover_images,
+          status,
+          publisher,
+          pub_year,
+          qty,
+          pdf_file,
+          isAwarded,
+          rating,
+          number_of_pages,
+          format,
+          reviews,
         }
       );
       return res.status(200).json({

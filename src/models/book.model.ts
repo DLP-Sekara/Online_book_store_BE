@@ -1,12 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 const bookSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
-    },
-    description: {
-      type: String,
     },
     author: {
       type: String,
@@ -20,15 +17,25 @@ const bookSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    type: {
-      type: String,
-    },
-    cover_image: {
-      type: String,
-    },
     status: {
       type: Number,
       required: true,
+    },
+    qty: {
+      type: Number,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    types: {
+      type: [String],
+    },
+    cover_images: {
+      type: [String],
+    },
+    pdf_file: {
+      type: String,
     },
     publisher: {
       type: String,
@@ -36,9 +43,20 @@ const bookSchema = new mongoose.Schema(
     pub_year: {
       type: String,
     },
-    qty: {
+    isAwarded: {
+      type: Boolean,
+    },
+    rating: {
       type: Number,
-      required: true,
+    },
+    number_of_pages: {
+      type: Number,
+    },
+    format: {
+      type: String,
+    },
+    reviews: {
+      type: String,
     },
   },
   {
