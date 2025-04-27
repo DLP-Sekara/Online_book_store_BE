@@ -20,6 +20,7 @@ export interface BookDetails {
   sort?: number;
   bookName?: string | undefined;
   ISBN_number: string | undefined;
+  searchTerm?: string | undefined;
 }
 export interface saveBook {
   _id?: Types.ObjectId | undefined;
@@ -42,6 +43,7 @@ export interface saveBook {
   reviews?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  old_images?: string[];
 }
 
 export interface bookIdInterface {

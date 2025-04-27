@@ -1,3 +1,4 @@
+import { uploadFileToCloudinary } from "../config/script";
 import BookRepository from "../repositories/BookRepository";
 import {
   BookDetails,
@@ -22,11 +23,67 @@ const BookService = {
 
   saveBookService: async (data: saveBook): Promise<ApiResponse<any[]>> => {
     try {
-      return await BookRepository.saveBookRepo(data);
+      const bookData: any = {
+        title: data.title,
+        description: data.description,
+        author: data.author,
+        ISBN_number: data.ISBN_number,
+        price:
+          typeof data.price === "string" ? parseFloat(data.price) : data.price,
+        types: data.types || [],
+        status:
+          typeof data.status === "string" ? parseInt(data.status) : data.status,
+        publisher: data.publisher,
+        pub_year: data.pub_year,
+        qty: data.qty,
+        isAwarded: data.isAwarded,
+        rating: data.rating,
+        number_of_pages: data.number_of_pages,
+        format: data.format,
+        reviews: data.reviews,
+        cover_images: [], // Will store URLs
+        pdf_file: null, // Will store URL
+        type: data.types,
+      };
+
+      // Handle cover images uploads (if any)
+      if (data.cover_images && data.cover_images.length > 0) {
+        const imageUploadPromises = data.cover_images.map((image) =>
+          uploadFileToCloudinary(image, "books/covers")
+        );
+
+        const imageUrls = await Promise.all(imageUploadPromises);
+
+        // Filter out any null results
+        bookData.cover_images = imageUrls.filter((url) => url !== null);
+      }
+
+      // Handle PDF file upload (if any)
+      if (data.pdf_file) {
+        const pdfUrl = await uploadFileToCloudinary(
+          data.pdf_file,
+          "books/files"
+        );
+        if (pdfUrl) {
+          bookData.pdf_file = pdfUrl;
+        }
+      }
+
+      // Save the book data with file URLs to the database using the repository
+      const result = await BookRepository.saveBookRepo(bookData);
+
+      return {
+        success: result.success,
+        message:
+          result.message ||
+          (result.success ? "Book saved successfully" : "Failed to save book"),
+        data: result.data,
+      };
     } catch (error: any) {
+      console.error("Error in saveBookService:", error);
       return {
         success: false,
-        message: error.message,
+        message: error.message || "An error occurred while saving the book",
         data: null,
       };
     }
@@ -34,7 +91,65 @@ const BookService = {
 
   updateBookService: async (data: saveBook): Promise<ApiResponse<any[]>> => {
     try {
-      return await BookRepository.updateBookRepo(data);
+      const bookData: any = {
+        _id: data._id,
+        title: data.title,
+        description: data.description,
+        author: data.author,
+        ISBN_number: data.ISBN_number,
+        price:
+          typeof data.price === "string" ? parseFloat(data.price) : data.price,
+        types: data.types || [],
+        status:
+          typeof data.status === "string" ? parseInt(data.status) : data.status,
+        publisher: data.publisher,
+        pub_year: data.pub_year,
+        qty: data.qty,
+        isAwarded: data.isAwarded,
+        rating: data.rating,
+        number_of_pages: data.number_of_pages,
+        format: data.format,
+        reviews: data.reviews,
+        cover_images: data.cover_images || [],
+        pdf_file: data.pdf_file || null,
+        type: data.types,
+      };
+      console.log(bookData);
+      // Handle cover images uploads (if any)
+      if (data.cover_images && data.cover_images.length > 0) {
+        const imageUploadPromises = data.cover_images.map((image) =>
+          uploadFileToCloudinary(image, "books/covers")
+        );
+
+        const imageUrls = await Promise.all(imageUploadPromises);
+        bookData.cover_images = imageUrls.filter((url) => url !== null);
+      } else {
+        bookData.cover_images = data?.old_images || [];
+      }
+
+      // Handle PDF file upload (if any)
+      if (data.pdf_file) {
+        const pdfUrl = await uploadFileToCloudinary(
+          data.pdf_file,
+          "books/files"
+        );
+        if (pdfUrl) {
+          bookData.pdf_file = pdfUrl;
+        }
+      }
+
+      // Update the book in the database
+      const result = await BookRepository.updateBookRepo(bookData);
+
+      return {
+        success: result.success,
+        message:
+          result.message ||
+          (result.success
+            ? "Book updated successfully"
+            : "Failed to update book"),
+        data: result.data,
+      };
     } catch (error: any) {
       return {
         success: false,

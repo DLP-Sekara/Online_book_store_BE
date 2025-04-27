@@ -9,13 +9,24 @@ import {
 const BookRepository = {
   getAllBookRepo: async (data: BookDetails): Promise<any> => {
     try {
-      const { page, perPage, sort, bookName, ISBN_number }: any = data;
+      const { page, perPage, sort, bookName, ISBN_number, searchTerm }: any =
+        data;
       let query: any = {};
-      if (bookName) {
-        query.title = { $regex: bookName, $options: "i" };
-      }
-      if (ISBN_number) {
-        query.ISBN_number = ISBN_number;
+
+      if (searchTerm) {
+        query = {
+          $or: [
+            { title: { $regex: searchTerm, $options: "i" } },
+            { ISBN_number: { $regex: searchTerm, $options: "i" } },
+          ],
+        };
+      } else {
+        if (bookName) {
+          query.title = { $regex: bookName, $options: "i" };
+        }
+        if (ISBN_number) {
+          query.ISBN_number = ISBN_number;
+        }
       }
 
       let sortCriteria: any = {};
@@ -141,13 +152,14 @@ const BookRepository = {
   updateBookRepo: async (data: saveBook): Promise<any> => {
     try {
       const existBookByTitle = await Book.findOne({
-        title: {
-          $regex: new RegExp("^" + data.title + "$", "i"),
-        },
-      }).select("title");
+        _id: { $ne: data._id }, // Exclude current book
+        title: { $regex: new RegExp(`^${data.title}$`, "i") }, // Case-insensitive match
+      });
 
+      // Check if a book with the same ISBN number exists (excluding the current book)
       const existBookByISBN = await Book.findOne({
         ISBN_number: data.ISBN_number,
+        _id: { $ne: data._id }, // Exclude current book
       }).select("ISBN_number");
 
       if (existBookByTitle) {

@@ -9,7 +9,8 @@ const BookController = {
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    const { page, perPage, sort, bookName, ISBN_number }: any = req.query;
+    const { page, perPage, sort, bookName, ISBN_number, searchTerm }: any =
+      req.query;
     try {
       const parsedPage = parseInt(page, 10) || 1;
       const parsedPerPage = parseInt(perPage, 10) || 10;
@@ -21,6 +22,7 @@ const BookController = {
           sort: parsedSort,
           bookName,
           ISBN_number,
+          searchTerm,
         }
       );
       return res.status(200).json({
@@ -45,18 +47,16 @@ const BookController = {
         author,
         ISBN_number,
         price,
-        types,
-        cover_images,
         status,
         publisher,
         pub_year,
         qty,
-        pdf_file,
         isAwarded,
         rating,
         number_of_pages,
         format,
         reviews,
+        types,
       } = req?.body;
 
       if (!title) {
@@ -107,6 +107,10 @@ const BookController = {
         });
       }
 
+      // Get files from request if they exist
+      let coverImages = (req as any).files?.["cover_images"] || [];
+      let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
+
       const response: ApiResponse<any[]> = await BookService?.saveBookService({
         title: title.trim(),
         description,
@@ -114,13 +118,13 @@ const BookController = {
         ISBN_number,
         price,
         types,
-        cover_images,
+        cover_images: coverImages,
         status,
         publisher,
         pub_year,
-        qty,
-        pdf_file,
-        isAwarded,
+        qty: parseInt(qty.toString()),
+        pdf_file: pdfFile,
+        isAwarded: isAwarded ? isAwarded : false,
         rating,
         number_of_pages,
         format,
@@ -149,20 +153,19 @@ const BookController = {
         author,
         ISBN_number,
         price,
-        types,
-        cover_images,
         status,
         publisher,
         pub_year,
         qty,
-        pdf_file,
         isAwarded,
         rating,
         number_of_pages,
         format,
         reviews,
+        types,
+        old_images,
       } = req?.body;
-
+      console.log(req?.body);
       if (!title || !bookId) {
         return res.status(200).json({
           success: false,
@@ -170,6 +173,10 @@ const BookController = {
           data: null,
         });
       }
+
+      // Get files from request if they exist
+      let coverImages = (req as any).files?.["cover_images"] || [];
+      let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
       const response: ApiResponse<any[]> = await BookService?.updateBookService(
         {
           _id: bookId,
@@ -179,17 +186,18 @@ const BookController = {
           ISBN_number,
           price,
           types,
-          cover_images,
+          cover_images: coverImages,
           status,
           publisher,
           pub_year,
-          qty,
-          pdf_file,
-          isAwarded,
+          qty: parseInt(qty.toString()),
+          pdf_file: pdfFile,
+          isAwarded: isAwarded ? isAwarded : false,
           rating,
           number_of_pages,
           format,
           reviews,
+          old_images,
         }
       );
       return res.status(200).json({
