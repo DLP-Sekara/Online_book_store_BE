@@ -19,6 +19,31 @@ export interface BookDetails {
   perPage?: number;
   sort?: number;
   bookName?: string | undefined;
+  ISBN_number: string | undefined;
+  searchTerm?: string | undefined;
+}
+export interface saveBook {
+  _id?: Types.ObjectId | undefined;
+  title: string;
+  author: string;
+  ISBN_number: string;
+  price: number;
+  status: number;
+  qty: number;
+  description?: string;
+  types?: string[];
+  cover_images?: string[];
+  pdf_file?: string;
+  publisher?: string;
+  pub_year?: string;
+  isAwarded?: boolean;
+  rating?: number;
+  number_of_pages?: number;
+  format?: "PDF" | "PAPER" | "BOTH";
+  reviews?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  old_images?: string[];
 }
 
 export interface bookIdInterface {

@@ -2,25 +2,25 @@ import express from "express";
 import multer from "multer";
 import BookController from "../controllers/bookController";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(
-      null,
-      "D:/IJSE/Work area/__PROJECTS__/book_store_cw/book_catalog_ui/public/uploads"
-    );
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
+// Configure multer to store files in memory
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB file size limit
   },
 });
 
-const upload = multer({ storage: storage });
+// Setup multer middleware for file uploads
+const bookUpload = upload.fields([
+  { name: "cover_images", maxCount: 5 },
+  { name: "pdf_file", maxCount: 1 },
+]);
 
 const route = express.Router();
 route.get("/all", BookController?.getAllBook);
 route.get("/view", BookController?.fetchBook);
-route.post("/create", BookController?.saveBook); //auth,role
-route.put("/update", BookController?.updateBook); //auth,role
+route.post("/create", bookUpload, BookController?.saveBook); //auth,role
+route.put("/update", bookUpload, BookController?.updateBook); //auth,role
 route.delete("/delete", BookController?.deleteBook); //auth,role
 
 export default route;

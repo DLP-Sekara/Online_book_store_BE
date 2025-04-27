@@ -103,6 +103,7 @@ const CustomerRepository = {
         email: data.email,
         password: hashedPassword,
         role: data.role,
+        orderCount: data.orderCount,
       });
       const newCustomer = await customer.save();
       return {
@@ -113,6 +114,7 @@ const CustomerRepository = {
           username: newCustomer.username,
           email: newCustomer.email,
           role: newCustomer.role,
+          orderCount: newCustomer.orderCount,
         },
       };
     } catch (error: any) {

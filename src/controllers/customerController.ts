@@ -53,6 +53,7 @@ const CustomerController = {
           email: email,
           password: password,
           role: "customer",
+          orderCount: 0,
         });
 
       return res.status(200).json({
@@ -143,7 +144,15 @@ const CustomerController = {
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    const { id, username, email, dob, mobile_number, address }: any = req.body;
+    const {
+      id,
+      username,
+      email,
+      dob,
+      mobile_number,
+      address,
+      orderCount,
+    }: any = req.body;
 
     try {
       if (!email) {
@@ -161,6 +170,7 @@ const CustomerController = {
           dob: new Date(dob),
           address: address,
           mobile_number: mobile_number,
+          orderCount: orderCount || 0,
           role: "customer",
         });
 

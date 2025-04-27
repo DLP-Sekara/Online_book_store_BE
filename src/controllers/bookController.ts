@@ -9,7 +9,8 @@ const BookController = {
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    const { page, perPage, sort, bookName }: any = req.query;
+    const { page, perPage, sort, bookName, ISBN_number, searchTerm }: any =
+      req.query;
     try {
       const parsedPage = parseInt(page, 10) || 1;
       const parsedPerPage = parseInt(perPage, 10) || 10;
@@ -20,6 +21,8 @@ const BookController = {
           perPage: parsedPerPage,
           sort: parsedSort,
           bookName,
+          ISBN_number,
+          searchTerm,
         }
       );
       return res.status(200).json({
@@ -44,12 +47,16 @@ const BookController = {
         author,
         ISBN_number,
         price,
-        type,
-        cover_image,
         status,
         publisher,
         pub_year,
         qty,
+        isAwarded,
+        rating,
+        number_of_pages,
+        format,
+        reviews,
+        types,
       } = req?.body;
 
       if (!title) {
@@ -59,18 +66,69 @@ const BookController = {
           data: null,
         });
       }
+
+      if (!author) {
+        return res.status(200).json({
+          success: false,
+          message: "Author Required!",
+          data: null,
+        });
+      }
+
+      if (!ISBN_number) {
+        return res.status(200).json({
+          success: false,
+          message: "ISBN Number Required!",
+          data: null,
+        });
+      }
+
+      if (!price) {
+        return res.status(200).json({
+          success: false,
+          message: "Price Required!",
+          data: null,
+        });
+      }
+
+      if (!status) {
+        return res.status(200).json({
+          success: false,
+          message: "Status Required!",
+          data: null,
+        });
+      }
+
+      if (!qty) {
+        return res.status(200).json({
+          success: false,
+          message: "Quantity Required!",
+          data: null,
+        });
+      }
+
+      // Get files from request if they exist
+      let coverImages = (req as any).files?.["cover_images"] || [];
+      let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
+
       const response: ApiResponse<any[]> = await BookService?.saveBookService({
         title: title.trim(),
-        description: description,
-        author: author,
-        ISBN_number: ISBN_number,
-        price: price,
-        type: type,
-        cover_image: cover_image,
-        status: status,
-        publisher: publisher,
-        pub_year: pub_year,
-        qty: qty,
+        description,
+        author,
+        ISBN_number,
+        price,
+        types,
+        cover_images: coverImages,
+        status,
+        publisher,
+        pub_year,
+        qty: parseInt(qty.toString()),
+        pdf_file: pdfFile,
+        isAwarded: isAwarded ? isAwarded : false,
+        rating,
+        number_of_pages,
+        format,
+        reviews,
       });
       return res.status(200).json({
         success: response?.success,
@@ -95,14 +153,19 @@ const BookController = {
         author,
         ISBN_number,
         price,
-        type,
-        cover_image,
         status,
         publisher,
         pub_year,
         qty,
+        isAwarded,
+        rating,
+        number_of_pages,
+        format,
+        reviews,
+        types,
+        old_images,
       } = req?.body;
-
+      console.log(req?.body);
       if (!title || !bookId) {
         return res.status(200).json({
           success: false,
@@ -110,20 +173,31 @@ const BookController = {
           data: null,
         });
       }
+
+      // Get files from request if they exist
+      let coverImages = (req as any).files?.["cover_images"] || [];
+      let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
       const response: ApiResponse<any[]> = await BookService?.updateBookService(
         {
           _id: bookId,
           title: title.trim(),
-          description: description,
-          author: author,
-          ISBN_number: ISBN_number,
-          price: price,
-          type: type,
-          cover_image: cover_image,
-          status: status,
-          publisher: publisher,
-          pub_year: pub_year,
-          qty: qty,
+          description,
+          author,
+          ISBN_number,
+          price,
+          types,
+          cover_images: coverImages,
+          status,
+          publisher,
+          pub_year,
+          qty: parseInt(qty.toString()),
+          pdf_file: pdfFile,
+          isAwarded: isAwarded ? isAwarded : false,
+          rating,
+          number_of_pages,
+          format,
+          reviews,
+          old_images,
         }
       );
       return res.status(200).json({

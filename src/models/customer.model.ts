@@ -28,6 +28,7 @@ const customerSchema = new mongoose.Schema(
     orderCount: {
       type: Number,
       required: false,
+      default: 0,
     },
     role: {
       type: String,

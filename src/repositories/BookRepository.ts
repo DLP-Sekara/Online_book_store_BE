@@ -3,15 +3,30 @@ import {
   BookDetails,
   bookIdInterface,
   BookModel,
+  saveBook,
 } from "../utils/interfaces/bookInterface";
 
 const BookRepository = {
   getAllBookRepo: async (data: BookDetails): Promise<any> => {
     try {
-      const { page, perPage, sort, bookName }: any = data;
+      const { page, perPage, sort, bookName, ISBN_number, searchTerm }: any =
+        data;
       let query: any = {};
-      if (bookName) {
-        query.title = { $regex: bookName, $options: "i" };
+
+      if (searchTerm) {
+        query = {
+          $or: [
+            { title: { $regex: searchTerm, $options: "i" } },
+            { ISBN_number: { $regex: searchTerm, $options: "i" } },
+          ],
+        };
+      } else {
+        if (bookName) {
+          query.title = { $regex: bookName, $options: "i" };
+        }
+        if (ISBN_number) {
+          query.ISBN_number = ISBN_number;
+        }
       }
 
       let sortCriteria: any = {};
@@ -28,7 +43,6 @@ const BookRepository = {
       }
 
       const skip = (page - 1) * perPage;
-
       const allBooks = await Book.find(query)
         .sort(sortCriteria)
         .skip(skip)
@@ -52,12 +66,20 @@ const BookRepository = {
             author: book?.author,
             ISBN_number: book?.ISBN_number,
             price: book?.price,
-            type: book?.type,
-            cover_image: book?.cover_image,
             status: book?.status,
+            qty: book?.qty,
+            types: book?.types,
+            cover_images: book?.cover_images,
+            pdf_file: book?.pdf_file,
             publisher: book?.publisher,
             pub_year: book?.pub_year,
-            qty: book?.qty,
+            isAwarded: book?.isAwarded,
+            rating: book?.rating,
+            number_of_pages: book?.number_of_pages,
+            format: book?.format,
+            reviews: book?.reviews,
+            createdAt: book?.createdAt,
+            updatedAt: book?.updatedAt,
           }))
         );
 
@@ -83,18 +105,30 @@ const BookRepository = {
     }
   },
 
-  saveBookRepo: async (data: any): Promise<any> => {
+  saveBookRepo: async (data: saveBook): Promise<any> => {
     try {
-      const existBook = await Book.findOne({
+      const existBookByTitle = await Book.findOne({
         title: {
           $regex: new RegExp("^" + data.title + "$", "i"),
         },
       }).select("title");
 
-      if (existBook) {
+      const existBookByISBN = await Book.findOne({
+        ISBN_number: data.ISBN_number,
+      }).select("ISBN_number");
+
+      if (existBookByTitle) {
         return {
           success: false,
-          message: "Book Already Exists!",
+          message: "Book with this title already exists!",
+          data: null,
+        };
+      }
+
+      if (existBookByISBN) {
+        return {
+          success: false,
+          message: "Book with this ISBN number already exists!",
           data: null,
         };
       }
@@ -115,19 +149,31 @@ const BookRepository = {
     }
   },
 
-  updateBookRepo: async (data: BookModel): Promise<any> => {
+  updateBookRepo: async (data: saveBook): Promise<any> => {
     try {
-      const existBook = await Book.findOne({
-        _id: { $ne: data?._id },
-        title: {
-          $regex: new RegExp("^" + data?.title + "$", "i"),
-        },
+      const existBookByTitle = await Book.findOne({
+        _id: { $ne: data._id }, // Exclude current book
+        title: { $regex: new RegExp(`^${data.title}$`, "i") }, // Case-insensitive match
       });
 
-      if (existBook) {
+      // Check if a book with the same ISBN number exists (excluding the current book)
+      const existBookByISBN = await Book.findOne({
+        ISBN_number: data.ISBN_number,
+        _id: { $ne: data._id }, // Exclude current book
+      }).select("ISBN_number");
+
+      if (existBookByTitle) {
         return {
           success: false,
-          message: "Book Already Exists!",
+          message: "Book with this title already exists!",
+          data: null,
+        };
+      }
+
+      if (existBookByISBN) {
+        return {
+          success: false,
+          message: "Book with this ISBN number already exists!",
           data: null,
         };
       }
@@ -163,19 +209,29 @@ const BookRepository = {
           data: null,
         };
       }
+      const typedBook = book as saveBook;
+
       const finalData = {
-        bookId: book?._id,
-        title: book?.title,
-        description: book?.description,
-        author: book?.author,
-        ISBN_number: book?.ISBN_number,
-        price: book?.price,
-        type: book?.type,
-        cover_image: book?.cover_image,
-        status: book?.status,
-        publisher: book?.publisher,
-        pub_year: book?.pub_year,
-        qty: book?.qty,
+        bookId: typedBook._id,
+        title: typedBook.title,
+        description: typedBook.description,
+        author: typedBook.author,
+        ISBN_number: typedBook.ISBN_number,
+        price: typedBook.price,
+        status: typedBook.status,
+        qty: typedBook.qty,
+        types: typedBook.types,
+        cover_images: typedBook.cover_images,
+        pdf_file: typedBook.pdf_file,
+        publisher: typedBook.publisher,
+        pub_year: typedBook.pub_year,
+        isAwarded: typedBook.isAwarded,
+        rating: typedBook.rating,
+        number_of_pages: typedBook.number_of_pages,
+        format: typedBook.format,
+        reviews: typedBook.reviews,
+        createdAt: typedBook.createdAt,
+        updatedAt: typedBook.updatedAt,
       };
       return {
         success: true,
