@@ -9,12 +9,8 @@ const orderDetailSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  amount: {
+  price: {
     type: Number,
-    required: true,
-  },
-  status: {
-    type: String,
     required: true,
   },
 });
@@ -25,11 +21,35 @@ const orderSchema = new mongoose.Schema(
       ref: "Customer",
       required: true,
     },
+    order_details: [orderDetailSchema],
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
     status: {
+      type: String,
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      default: "pending",
+    },
+    shippingAddress: {
+      address: { type: String, required: true },
+      city: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      country: { type: String, required: true },
+    },
+    phoneNumber: {
       type: String,
       required: true,
     },
-    order_details: [orderDetailSchema],
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed", "refunded"],
+      default: "pending",
+    },
   },
   {
     timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },

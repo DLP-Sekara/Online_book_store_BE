@@ -6,7 +6,7 @@ export interface CustomerModel {
   email: string;
   dob: Date | undefined;
   mobile_number: string | undefined;
-  address: string | undefined;
+  shippingAddress: string | undefined;
   role: string | undefined;
   orderCount: number | undefined;
 }
