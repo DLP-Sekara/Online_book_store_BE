@@ -1,16 +1,32 @@
 import Order from "../models/order.model";
-import { OrderDetails } from "../utils/interfaces/orderInterface";
+import Book from "../models/book.model";
+import {
+  OrderDetails,
+  OrderIdInterface,
+  SaveOrder,
+} from "../utils/interfaces/orderInterface";
+import { ObjectId } from "mongoose";
+import { bookIdInterface } from "../utils/interfaces/bookInterface";
+import Customer from "../models/customer.model";
 
 const OrderRepository = {
+  //get All Orders
   getAllOrdersRepo: async (data: OrderDetails): Promise<any> => {
     try {
-      const { page, perPage, sort, customerName }: any = data;
-
+      const { page, perPage, sort, searchTerm }: any = data;
       let query: any = {};
-      if (customerName) {
-        query.username = { $regex: customerName, $options: "i" };
-      }
 
+      if (searchTerm) {
+        query = {
+          $or: [
+            {
+              "shippingAddress.address": { $regex: searchTerm, $options: "i" },
+            },
+            { paymentMethod: { $regex: searchTerm, $options: "i" } },
+            { phoneNumber: { $regex: searchTerm, $options: "i" } },
+          ],
+        };
+      }
       let sortCriteria: any = {};
       switch (sort) {
         case 1:
@@ -23,32 +39,38 @@ const OrderRepository = {
           sortCriteria = { updatedAt: -1 }; // Default to descending
           break;
       }
-
       const skip = (page - 1) * perPage;
-
       const allOrders = await Order.find(query)
         .sort(sortCriteria)
         .skip(skip)
         .limit(perPage)
+        .populate("customer_id", "username email") // optional: show customer details
+        .populate("order_details.book_id", "title author price") // populate book info
         .lean();
 
-      if (!allOrders) {
-        return {
-          success: true,
-          message: "No Customers To Fetch!",
-          data: [],
-        };
-      }
-      const processOrders = async (allOrders: any) =>
-        Promise.all(
-          allOrders.map(async (order: any) => ({
-            id: order?._id,
-            status: order?.status,
-            order_details: order?.order_details,
-          }))
-        );
+      const processedOrders = allOrders.map((order: any) => ({
+        orderId: order._id,
+        customer: order.customer_id, // populated with name, email
+        order_details: order.order_details.map((detail: any) => ({
+          book: {
+            bookId: detail.book_id._id,
+            title: detail.book_id.title,
+            author: detail.book_id.author,
+            price: detail.book_id.price,
+          },
+          qty: detail.qty,
+          price: detail.price,
+        })),
+        totalAmount: order.totalAmount,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        phoneNumber: order.phoneNumber,
+      }));
 
-      const processedOrders = await processOrders(allOrders);
       const totalCount = await Order.countDocuments(query);
       const totalPages = Math.ceil(totalCount / perPage);
       return {
@@ -58,7 +80,7 @@ const OrderRepository = {
           page,
           totalPages,
           totalCount,
-          customers: processedOrders,
+          orders: processedOrders,
         },
       };
     } catch (error: any) {
@@ -69,29 +91,26 @@ const OrderRepository = {
       };
     }
   },
-  searchOrdersRepo: async (data: any): Promise<any> => {
-    try {
-      const existOrder = await Order.findOne({
-        customer_id: {
-          $regex: new RegExp("^" + data._id + "$", "i"),
-        },
-      });
 
-      if (existOrder) {
+  // Get Order By ID
+  getOrderByIdRepo: async (orderId: OrderIdInterface): Promise<any> => {
+    try {
+      const order = await Order.findById(orderId)
+        .populate("customer_id", "username email") // optional: show customer details
+        .populate("order_details.book_id", "title author price") // populate book info
+        .lean();
+      if (!order) {
         return {
-          success: true,
-          message: "Order Found Successfully!",
-          data: {
-            id: existOrder?._id,
-            status: existOrder?.status,
-            order_details: existOrder?.order_details,
-          },
+          success: false,
+          message: "Order not found!",
+          data: null,
         };
       }
+
       return {
-        success: false,
-        message: "Order Not Found!",
-        data: null,
+        success: true,
+        message: "Order fetched successfully!",
+        data: order,
       };
     } catch (error: any) {
       return {
@@ -101,7 +120,9 @@ const OrderRepository = {
       };
     }
   },
-  deleteOrdersRepo: async (data: any): Promise<any> => {
+
+  //delete Order Repo
+  deleteOrderRepo: async (data: OrderIdInterface): Promise<any> => {
     try {
       const order = await Order.findOne({ _id: data?._id }).lean();
       if (!order) {
@@ -125,25 +146,26 @@ const OrderRepository = {
       };
     }
   },
-  updateOrdersRepo: async (data: any): Promise<any> => {
+
+  // Get User Orders
+  getUserOrdersRepo: async (userId: OrderIdInterface): Promise<any> => {
     try {
-      const updatedOrder = await Order.findOneAndUpdate(
-        { _id: data?._id },
-        {
-          status: data?.status,
-        }
-      );
-      if (!updatedOrder) {
+      const orders = await Order.find({ customer_id: userId })
+        .populate("customer_id", "username email") // optional: show customer details
+        .populate("order_details.book_id", "title author price") // populate book info
+        .lean();
+
+      if (!orders) {
         return {
           success: false,
-          message: "Order Not Found Or Could Not Be Updated!",
+          message: "Order not found!",
           data: null,
         };
       }
       return {
         success: true,
-        message: "Order Updated Successfully!",
-        data: null,
+        message: "Orders fetched successfully!",
+        data: orders,
       };
     } catch (error: any) {
       return {
@@ -153,12 +175,107 @@ const OrderRepository = {
       };
     }
   },
-  createOrdersRepo: async (data: any): Promise<any> => {
+
+  // Create Order
+  createOrderRepo: async (orderData: SaveOrder): Promise<any> => {
     try {
+      const order = new Order(orderData);
+      const savedOrder = await order.save();
+
+      // Update book quantities
+      for (const item of orderData.order_details) {
+        await Book.findByIdAndUpdate(
+          item.book_id,
+          { $inc: { qty: -item.qty } },
+          { new: true }
+        );
+      }
+
+      // Update customer's orderCount
+      await Customer.findByIdAndUpdate(
+        orderData.customer_id,
+        {
+          $inc: { orderCount: 1 },
+          $set: {
+            shippingAddress: orderData.shippingAddress,
+            ...(orderData.phoneNumber && {
+              mobile_number: orderData.phoneNumber,
+            }),
+          },
+        },
+        { new: true }
+      );
+
+      return {
+        success: true,
+        message: "Order created successfully!",
+        data: savedOrder,
+      };
+    } catch (error: any) {
       return {
         success: false,
-        message: "Order Not Found!",
+        message: error.message,
         data: null,
+      };
+    }
+  },
+
+  // Update Order Status
+  updateOrderStatusRepo: async (
+    orderId: ObjectId,
+    status: any
+  ): Promise<any> => {
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return {
+          success: false,
+          message: "Order not found!",
+          data: null,
+        };
+      }
+
+      order.status = status;
+      const updatedOrder = await order.save();
+
+      return {
+        success: true,
+        message: "Order status updated successfully to " + status + "!",
+        data: updatedOrder,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  // Update Order payment Status
+  updateOrderPaymentStatusRepo: async (
+    orderId: ObjectId,
+    paymentStatus: any
+  ): Promise<any> => {
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return {
+          success: false,
+          message: "Order not found!",
+          data: null,
+        };
+      }
+
+      order.paymentStatus = paymentStatus;
+      const updatedOrder = await order.save();
+
+      return {
+        success: true,
+        message: "Order payment status updated successfully!",
+        data: updatedOrder,
       };
     } catch (error: any) {
       return {

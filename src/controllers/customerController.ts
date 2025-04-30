@@ -150,7 +150,7 @@ const CustomerController = {
       email,
       dob,
       mobile_number,
-      address,
+      shippingAddress,
       orderCount,
     }: any = req.body;
 
@@ -168,7 +168,7 @@ const CustomerController = {
           username: username,
           email: email,
           dob: new Date(dob),
-          address: address,
+          shippingAddress: shippingAddress,
           mobile_number: mobile_number,
           orderCount: orderCount || 0,
           role: "customer",

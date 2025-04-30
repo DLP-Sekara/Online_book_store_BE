@@ -20,7 +20,7 @@ export interface OrderDetails {
   page?: number;
   perPage?: number;
   sort?: number;
-  customerName?: string | undefined;
+  searchTerm?: string | undefined;
 }
 
 export interface OrderIdInterface {
@@ -29,4 +29,27 @@ export interface OrderIdInterface {
 
 export interface OrderEmailInterface {
   email: string;
+}
+
+export interface OrderDetail {
+  book_id: Types.ObjectId | string; // string for input, ObjectId for DB
+  qty: number;
+  price: number;
+}
+
+export interface ShippingAddress {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+export interface SaveOrder {
+  customer_id: Types.ObjectId | string;
+  order_details: OrderDetail[];
+  totalAmount: number;
+  status?: "pending" | "processing" | "shipped" | "delivered" | "cancelled"; // optional for create (defaults to pending)
+  shippingAddress: ShippingAddress;
+  paymentMethod: string;
+  paymentStatus?: "pending" | "completed" | "failed" | "refunded"; // optional (defaults to pending)
+  phoneNumber: string;
 }
