@@ -44,7 +44,7 @@ const OrderRepository = {
         .sort(sortCriteria)
         .skip(skip)
         .limit(perPage)
-        .populate("customer_id", "name email") // optional: show customer details
+        .populate("customer_id", "username email") // optional: show customer details
         .populate("order_details.book_id", "title author price") // populate book info
         .lean();
 
@@ -80,7 +80,7 @@ const OrderRepository = {
           page,
           totalPages,
           totalCount,
-          books: processedOrders,
+          orders: processedOrders,
         },
       };
     } catch (error: any) {
@@ -96,7 +96,7 @@ const OrderRepository = {
   getOrderByIdRepo: async (orderId: OrderIdInterface): Promise<any> => {
     try {
       const order = await Order.findById(orderId)
-        .populate("customer_id", "name email") // optional: show customer details
+        .populate("customer_id", "username email") // optional: show customer details
         .populate("order_details.book_id", "title author price") // populate book info
         .lean();
       if (!order) {
@@ -151,7 +151,7 @@ const OrderRepository = {
   getUserOrdersRepo: async (userId: OrderIdInterface): Promise<any> => {
     try {
       const orders = await Order.find({ customer_id: userId })
-        .populate("customer_id", "name email") // optional: show customer details
+        .populate("customer_id", "username email") // optional: show customer details
         .populate("order_details.book_id", "title author price") // populate book info
         .lean();
 
@@ -241,7 +241,7 @@ const OrderRepository = {
 
       return {
         success: true,
-        message: "Order status updated successfully!",
+        message: "Order status updated successfully to " + status + "!",
         data: updatedOrder,
       };
     } catch (error: any) {

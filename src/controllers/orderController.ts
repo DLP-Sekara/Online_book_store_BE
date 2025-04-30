@@ -140,7 +140,6 @@ const orderController = {
         paymentMethod,
         phoneNumber,
       } = req.body;
-      console.log(req.body);
 
       if (!Array.isArray(order_details) || order_details.length === 0) {
         return res.status(400).json({
@@ -237,7 +236,6 @@ const orderController = {
   ): Promise<any> => {
     try {
       const { orderId, status }: any = req.body;
-      console.log(req.query);
       if (!status) {
         return res.status(400).json({
           success: false,

@@ -165,8 +165,7 @@ const BookController = {
         types,
         old_images,
       } = req?.body;
-      console.log(req?.body);
-      if (!title || !bookId) {
+       if (!title || !bookId) {
         return res.status(200).json({
           success: false,
           message: "Book ID & Book Name Required!",

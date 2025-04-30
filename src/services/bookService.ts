@@ -114,8 +114,7 @@ const BookService = {
         pdf_file: data.pdf_file || null,
         type: data.types,
       };
-      console.log(bookData);
-      // Handle cover images uploads (if any)
+       // Handle cover images uploads (if any)
       if (data.cover_images && data.cover_images.length > 0) {
         const imageUploadPromises = data.cover_images.map((image) =>
           uploadFileToCloudinary(image, "books/covers")

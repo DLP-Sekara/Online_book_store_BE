@@ -28,8 +28,7 @@ const orderService = {
   },
 
   createOrderService: async (orderData: SaveOrder) => {
-    console.log(orderData);
-    return await OrderRepository.createOrderRepo(orderData);
+     return await OrderRepository.createOrderRepo(orderData);
   },
 
   updateOrderStatusService: async (orderId: ObjectId, status: string) => {
