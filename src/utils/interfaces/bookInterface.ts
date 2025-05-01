@@ -21,6 +21,12 @@ export interface BookDetails {
   bookName?: string | undefined;
   ISBN_number: string | undefined;
   searchTerm?: string | undefined;
+  defaultFilter?: string | undefined;
+  popularAuthors?: string | undefined;
+  priceMin?: number | undefined;
+  priceMax?: number | undefined;
+  availability?: boolean | undefined;
+  types?: string | undefined;
 }
 export interface saveBook {
   _id?: Types.ObjectId | undefined;
