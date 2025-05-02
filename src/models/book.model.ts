@@ -1,4 +1,18 @@
 import mongoose from "mongoose";
+// const reviews = new mongoose.Schema({
+//   userName: {
+//     type: String,
+//     required: true,
+//   },
+//   comment: {
+//     type: String,
+//     required: true,
+//   },
+//   rating: {
+//     type: Number,
+//     required: true,
+//   },
+// });
 const bookSchema = new mongoose.Schema(
   {
     title: {
