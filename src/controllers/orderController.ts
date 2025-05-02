@@ -174,7 +174,7 @@ const orderController = {
       }
       let totalAmount = 0;
       const orderItems: OrderDetail[] = [];
-
+      const SHIPPING_FEE = 1000;
       for (const item of order_details) {
         const response = await BookService?.fetchBookService({
           _id: item.book_id,
@@ -209,7 +209,7 @@ const orderController = {
       const orderData: SaveOrder = {
         customer_id,
         order_details: orderItems,
-        totalAmount,
+        totalAmount: totalAmount + SHIPPING_FEE,
         shippingAddress,
         paymentMethod,
         phoneNumber,

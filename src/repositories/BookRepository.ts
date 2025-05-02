@@ -9,10 +9,23 @@ import {
 const BookRepository = {
   getAllBookRepo: async (data: BookDetails): Promise<any> => {
     try {
-      const { page, perPage, sort, bookName, ISBN_number, searchTerm }: any =
-        data;
+      const {
+        page,
+        perPage,
+        sort,
+        bookName,
+        ISBN_number,
+        searchTerm,
+        defaultFilter,
+        popularAuthors,
+        priceMin,
+        priceMax,
+        availability,
+        types,
+      }: any = data;
       let query: any = {};
 
+      //search filter
       if (searchTerm) {
         query = {
           $or: [
@@ -28,7 +41,7 @@ const BookRepository = {
           query.ISBN_number = ISBN_number;
         }
       }
-
+      //sort filters
       let sortCriteria: any = {};
       switch (sort) {
         case 1:
@@ -42,6 +55,49 @@ const BookRepository = {
           break;
       }
 
+      // 🎯 Specific filters
+      if (popularAuthors?.length) query.author = { $in: popularAuthors };
+      if (priceMin !== undefined || priceMax !== undefined) {
+        query.price = {};
+        if (priceMin !== undefined) query.price.$gte = priceMin;
+        if (priceMax !== undefined) query.price.$lte = priceMax;
+      }
+      if (availability !== undefined) {
+        if (availability) {
+          query.qty = { $gt: 0 }; // In stock
+        } else {
+          query.qty = { $lte: 0 }; // Out of stock or none
+        }
+      }
+      if (types?.length) query.types = { $in: types };
+
+      switch (defaultFilter) {
+        case "newRelease":
+          {
+            const currentYear = new Date().getFullYear();
+            console.log(currentYear);
+            query.pub_year = String(currentYear);
+          }
+          break;
+        case "isAwarded":
+          {
+            query.isAwarded = true;
+          }
+          break;
+        case "bestSelling":
+          {
+            query.qty = { $gte: 100 };
+          }
+          break;
+        case "comingSoon":
+          {
+            const currentYear = new Date().getFullYear();
+            query.pub_year = { $gt: String(currentYear) };
+          }
+          break;
+        default:
+          sortCriteria = { createdAt: -1 }; // Default to descending
+      }
       const skip = (page - 1) * perPage;
       const allBooks = await Book.find(query)
         .sort(sortCriteria)

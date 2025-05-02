@@ -9,8 +9,20 @@ const BookController = {
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    const { page, perPage, sort, bookName, ISBN_number, searchTerm }: any =
-      req.query;
+    const {
+      page,
+      perPage,
+      sort,
+      bookName,
+      ISBN_number,
+      searchTerm,
+      defaultFilter,
+      popularAuthors,
+      priceMin,
+      priceMax,
+      availability,
+      types,
+    }: any = req.query;
     try {
       const parsedPage = parseInt(page, 10) || 1;
       const parsedPerPage = parseInt(perPage, 10) || 10;
@@ -23,6 +35,12 @@ const BookController = {
           bookName,
           ISBN_number,
           searchTerm,
+          defaultFilter,
+          popularAuthors,
+          priceMin,
+          priceMax,
+          availability,
+          types,
         }
       );
       return res.status(200).json({
@@ -165,7 +183,7 @@ const BookController = {
         types,
         old_images,
       } = req?.body;
-       if (!title || !bookId) {
+      if (!title || !bookId) {
         return res.status(200).json({
           success: false,
           message: "Book ID & Book Name Required!",

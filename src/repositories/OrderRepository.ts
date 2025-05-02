@@ -52,12 +52,14 @@ const OrderRepository = {
         orderId: order._id,
         customer: order.customer_id, // populated with name, email
         order_details: order.order_details.map((detail: any) => ({
-          book: {
-            bookId: detail.book_id._id,
-            title: detail.book_id.title,
-            author: detail.book_id.author,
-            price: detail.book_id.price,
-          },
+          book: detail.book_id
+            ? {
+                bookId: detail.book_id._id,
+                title: detail.book_id.title,
+                author: detail.book_id.author,
+                price: detail.book_id.price,
+              }
+            : null,
           qty: detail.qty,
           price: detail.price,
         })),
@@ -70,7 +72,7 @@ const OrderRepository = {
         updatedAt: order.updatedAt,
         phoneNumber: order.phoneNumber,
       }));
-
+      console.log(allOrders);
       const totalCount = await Order.countDocuments(query);
       const totalPages = Math.ceil(totalCount / perPage);
       return {
