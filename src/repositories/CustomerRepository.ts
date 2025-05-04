@@ -173,7 +173,7 @@ const CustomerRepository = {
 
   updateCustomerRepo: async (data: CustomerModel): Promise<any> => {
     try {
-      const existCustomer = await Customer.findOne({
+      const existCustomer: any = await Customer.findOne({
         _id: { $ne: data?._id },
       });
       if (!existCustomer) {
@@ -206,6 +206,8 @@ const CustomerRepository = {
           mobile_number: existCustomer.mobile_number,
           dob: existCustomer.dob,
           orderCount: existCustomer.orderCount,
+          createdAt: existCustomer.createdAt,
+          updatedAt: existCustomer.updatedAt,
         },
       };
     } catch (error: any) {
@@ -219,7 +221,7 @@ const CustomerRepository = {
 
   getCustomerDetailsRepo: async (data: any): Promise<any> => {
     try {
-      const existCustomer = await Customer.findOne({
+      const existCustomer: any = await Customer.findOne({
         email: {
           $regex: new RegExp("^" + data.email + "$", "i"),
         },
@@ -238,6 +240,8 @@ const CustomerRepository = {
             mobile_number: existCustomer.mobile_number,
             dob: existCustomer.dob,
             orderCount: existCustomer.orderCount,
+            createdAt: existCustomer.createdAt,
+            updatedAt: existCustomer.updatedAt,
           },
         };
       }
