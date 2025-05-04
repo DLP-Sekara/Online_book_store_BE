@@ -72,7 +72,6 @@ const OrderRepository = {
         updatedAt: order.updatedAt,
         phoneNumber: order.phoneNumber,
       }));
-      console.log(allOrders);
       const totalCount = await Order.countDocuments(query);
       const totalPages = Math.ceil(totalCount / perPage);
       return {

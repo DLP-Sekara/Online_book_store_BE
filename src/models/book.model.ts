@@ -1,18 +1,15 @@
 import mongoose from "mongoose";
-// const reviews = new mongoose.Schema({
-//   userName: {
-//     type: String,
-//     required: true,
-//   },
-//   comment: {
-//     type: String,
-//     required: true,
-//   },
-//   rating: {
-//     type: Number,
-//     required: true,
-//   },
-// });
+const reviews = new mongoose.Schema({
+  userName: {
+    type: String,
+  },
+  comment: {
+    type: String,
+  },
+  rating: {
+    type: Number,
+  },
+});
 const bookSchema = new mongoose.Schema(
   {
     title: {
@@ -70,7 +67,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
     },
     reviews: {
-      type: String,
+      type: [reviews],
     },
   },
   {

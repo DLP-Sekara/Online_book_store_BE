@@ -3,6 +3,7 @@ import {
   BookDetails,
   bookIdInterface,
   BookModel,
+  BookReviews,
   saveBook,
 } from "../utils/interfaces/bookInterface";
 
@@ -75,7 +76,6 @@ const BookRepository = {
         case "newRelease":
           {
             const currentYear = new Date().getFullYear();
-            console.log(currentYear);
             query.pub_year = String(currentYear);
           }
           break;
@@ -206,7 +206,7 @@ const BookRepository = {
   },
 
   updateBookRepo: async (data: saveBook): Promise<any> => {
-    try {
+    try { 
       const existBookByTitle = await Book.findOne({
         _id: { $ne: data._id }, // Exclude current book
         title: { $regex: new RegExp(`^${data.title}$`, "i") }, // Case-insensitive match
@@ -318,6 +318,55 @@ const BookRepository = {
         success: true,
         message: "Book Deleted Successfully!",
         data: null,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  addReviewRepo: async (review: BookReviews): Promise<any> => {
+    try { 
+      const book = await Book.findById({ _id: review?.bookId });
+      if (!book) {
+        return {
+          success: false,
+          message: "Book not found!",
+          data: null,
+        };
+      }
+
+      const newReview = {
+        userName: review.userName,
+        comment: review.comment,
+        rating: review.rating,
+      };
+
+      book.reviews.push(newReview);
+
+      // Recalculate average rating
+      if (book.reviews.length > 0) {
+        const totalRating = book.reviews.reduce(
+          (sum, r: any) => sum + (r?.rating || 0),
+          0
+        );
+        const averageRating = totalRating / book.reviews.length;
+
+        book.rating = parseFloat(averageRating.toFixed(1));
+      } else {
+        book.rating = 0; // or null, depending on your preference
+      }
+
+      // Save updated book
+      await book.save();
+
+      return {
+        success: true,
+        message: "Review added successfully!",
+        data: book.reviews,
       };
     } catch (error: any) {
       return {
