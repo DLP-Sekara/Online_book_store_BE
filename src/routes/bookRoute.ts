@@ -22,5 +22,6 @@ route.get("/view", BookController?.fetchBook);
 route.post("/create", bookUpload, BookController?.saveBook); //auth,role
 route.put("/update", bookUpload, BookController?.updateBook); //auth,role
 route.delete("/delete", BookController?.deleteBook); //auth,role
+route.post("/review", BookController.addReview);
 
 export default route;

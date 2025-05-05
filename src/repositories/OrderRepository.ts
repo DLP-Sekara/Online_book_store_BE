@@ -72,7 +72,6 @@ const OrderRepository = {
         updatedAt: order.updatedAt,
         phoneNumber: order.phoneNumber,
       }));
-      console.log(allOrders);
       const totalCount = await Order.countDocuments(query);
       const totalPages = Math.ceil(totalCount / perPage);
       return {
@@ -133,6 +132,16 @@ const OrderRepository = {
           message: "Can Not Fetch Order Data!",
           data: null,
         };
+      }
+      if (["pending", "processing", "shipped"].includes(order.status)) {
+        for (const item of order.order_details || []) {
+          const { book_id, qty } = item;
+          await Book.findByIdAndUpdate(
+            book_id,
+            { $inc: { qty: qty } },
+            { new: true }
+          );
+        }
       }
       await Order.findByIdAndDelete({ _id: data?._id });
       return {
@@ -237,7 +246,16 @@ const OrderRepository = {
           data: null,
         };
       }
-
+      if (status === "cancelled") {
+        for (const item of order.order_details || []) {
+          const { book_id, qty } = item;
+          await Book.findByIdAndUpdate(
+            book_id,
+            { $inc: { qty: qty } },
+            { new: true }
+          );
+        }
+      }
       order.status = status;
       const updatedOrder = await order.save();
 

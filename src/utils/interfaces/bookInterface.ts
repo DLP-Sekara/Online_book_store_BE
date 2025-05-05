@@ -28,6 +28,13 @@ export interface BookDetails {
   availability?: boolean | undefined;
   types?: string | undefined;
 }
+
+export interface BookReviews {
+  bookId?: Types.ObjectId | undefined;
+  userName: string | undefined;
+  comment: string | undefined;
+  rating: number | undefined;
+}
 export interface saveBook {
   _id?: Types.ObjectId | undefined;
   title: string;
@@ -46,7 +53,7 @@ export interface saveBook {
   rating?: number;
   number_of_pages?: number;
   format?: "PDF" | "PAPER" | "BOTH";
-  reviews?: string;
+  reviews?: BookReviews[];
   createdAt?: Date;
   updatedAt?: Date;
   old_images?: string[];

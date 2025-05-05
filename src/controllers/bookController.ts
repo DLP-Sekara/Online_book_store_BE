@@ -128,7 +128,7 @@ const BookController = {
       // Get files from request if they exist
       let coverImages = (req as any).files?.["cover_images"] || [];
       let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
-
+      let defaultReviews: never[] = [];
       const response: ApiResponse<any[]> = await BookService?.saveBookService({
         title: title.trim(),
         description,
@@ -146,7 +146,7 @@ const BookController = {
         rating,
         number_of_pages,
         format,
-        reviews,
+        reviews: defaultReviews,
       });
       return res.status(200).json({
         success: response?.success,
@@ -194,6 +194,7 @@ const BookController = {
       // Get files from request if they exist
       let coverImages = (req as any).files?.["cover_images"] || [];
       let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
+      let defaultReviews: any = [];
       const response: ApiResponse<any[]> = await BookService?.updateBookService(
         {
           _id: bookId,
@@ -213,7 +214,7 @@ const BookController = {
           rating,
           number_of_pages,
           format,
-          reviews,
+          reviews: [],
           old_images,
         }
       );
@@ -275,6 +276,34 @@ const BookController = {
           _id: bookId,
         }
       );
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  addReview: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const review = req.body;
+
+      if (!review) {
+        return res.status(200).json({
+          success: false,
+          message: "Book ID and review are required!",
+          data: null,
+        });
+      }
+
+      const response = await BookService.saveBookReviewService(review);
+
       return res.status(200).json({
         success: response?.success,
         message: response.message,

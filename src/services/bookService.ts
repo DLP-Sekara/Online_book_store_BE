@@ -4,6 +4,7 @@ import {
   BookDetails,
   bookIdInterface,
   BookModel,
+  BookReviews,
   saveBook,
 } from "../utils/interfaces/bookInterface";
 import { ApiResponse } from "../utils/interfaces/commonInterface";
@@ -114,7 +115,7 @@ const BookService = {
         pdf_file: data.pdf_file || null,
         type: data.types,
       };
-       // Handle cover images uploads (if any)
+      // Handle cover images uploads (if any)
       if (data.cover_images && data.cover_images.length > 0) {
         const imageUploadPromises = data.cover_images.map((image) =>
           uploadFileToCloudinary(image, "books/covers")
@@ -177,6 +178,26 @@ const BookService = {
   ): Promise<ApiResponse<any[]>> => {
     try {
       return await BookRepository.deleteBookRepo(data);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  saveBookReviewService: async (
+    review: BookReviews
+  ): Promise<ApiResponse<any>> => {
+    try {
+      const result = await BookRepository.addReviewRepo(review);
+
+      return {
+        success: result.success,
+        message: result.message,
+        data: result.data,
+      };
     } catch (error: any) {
       return {
         success: false,
