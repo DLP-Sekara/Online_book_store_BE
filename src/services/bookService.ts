@@ -1,3 +1,4 @@
+import { uploadToAzureBlob } from "../config/azureBlob";
 import { uploadFileToCloudinary } from "../config/script";
 import BookRepository from "../repositories/BookRepository";
 import {
@@ -48,27 +49,30 @@ const BookService = {
       };
 
       // Handle cover images uploads (if any)
-      if (data.cover_images && data.cover_images.length > 0) {
-        const imageUploadPromises = data.cover_images.map((image) =>
-          uploadFileToCloudinary(image, "books/covers")
-        );
+      // if (data.cover_images && data.cover_images.length > 0) {
+      //   const imageUploadPromises = data.cover_images.map((image) =>
+      //     //uploadFileToCloudinary(image, "books/covers")
+      //     uploadToAzureBlob(image.buffer, image.originalname, image.mimetype)
+      //   );
 
-        const imageUrls = await Promise.all(imageUploadPromises);
+      //   const imageUrls = await Promise.all(imageUploadPromises);
 
-        // Filter out any null results
-        bookData.cover_images = imageUrls.filter((url) => url !== null);
-      }
+      //   // Filter out any null results
+      //   bookData.cover_images = imageUrls.filter((url) => url !== null);
+      // }
+      bookData.cover_images = data.cover_images || [];
+      bookData.pdf_file = data.pdf_file || "";
 
       // Handle PDF file upload (if any)
-      if (data.pdf_file) {
-        const pdfUrl = await uploadFileToCloudinary(
-          data.pdf_file,
-          "books/files"
-        );
-        if (pdfUrl) {
-          bookData.pdf_file = pdfUrl;
-        }
-      }
+      // if (data.pdf_file) {
+      //   const pdfUrl = await uploadFileToCloudinary(
+      //     data.pdf_file,
+      //     "books/files"
+      //   );
+      //   if (pdfUrl) {
+      //     bookData.pdf_file = pdfUrl;
+      //   }
+      // }
 
       // Save the book data with file URLs to the database using the repository
       const result = await BookRepository.saveBookRepo(bookData);

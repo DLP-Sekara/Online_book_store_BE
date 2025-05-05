@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { uploadToAzureBlob } from "../config/azureBlob";
 import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../utils/interfaces/commonInterface";
 import BookService from "../services/bookService";
@@ -59,6 +60,32 @@ const BookController = {
     next: NextFunction
   ): Promise<any> => {
     try {
+      let pdfFile = (req.files as { [key: string]: Express.Multer.File[] })
+        ?.pdf_file?.[0];
+      let coverImages =
+        (req.files as { [key: string]: Express.Multer.File[] })?.cover_images ||
+        [];
+
+      let uploadedPdfUrl = "";
+      if (pdfFile) {
+        uploadedPdfUrl = await uploadToAzureBlob(
+          pdfFile.buffer,
+          pdfFile.originalname,
+          pdfFile.mimetype
+        );
+        console.log("UPDATED PDF URL", uploadedPdfUrl);
+      }
+
+      const uploadedImageUrls: string[] = [];
+      for (const image of coverImages) {
+        const imageUrl = await uploadToAzureBlob(
+          image.buffer,
+          image.originalname,
+          image.mimetype
+        );
+        uploadedImageUrls.push(imageUrl);
+        console.log("IMAGE URLS", uploadedImageUrls);
+      }
       const {
         title,
         description,
@@ -126,8 +153,8 @@ const BookController = {
       }
 
       // Get files from request if they exist
-      let coverImages = (req as any).files?.["cover_images"] || [];
-      let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
+      coverImages = (req as any).files?.["cover_images"] || [];
+      pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
       let defaultReviews: never[] = [];
       const response: ApiResponse<any[]> = await BookService?.saveBookService({
         title: title.trim(),
@@ -136,12 +163,12 @@ const BookController = {
         ISBN_number,
         price,
         types,
-        cover_images: coverImages,
+        cover_images: uploadedImageUrls,
         status,
         publisher,
         pub_year,
         qty: parseInt(qty.toString()),
-        pdf_file: pdfFile,
+        pdf_file: uploadedPdfUrl,
         isAwarded: isAwarded ? isAwarded : false,
         rating,
         number_of_pages,
