@@ -133,6 +133,16 @@ const OrderRepository = {
           data: null,
         };
       }
+      if (["pending", "processing", "shipped"].includes(order.status)) {
+        for (const item of order.order_details || []) {
+          const { book_id, qty } = item;
+          await Book.findByIdAndUpdate(
+            book_id,
+            { $inc: { qty: qty } },
+            { new: true }
+          );
+        }
+      }
       await Order.findByIdAndDelete({ _id: data?._id });
       return {
         success: true,
@@ -236,7 +246,16 @@ const OrderRepository = {
           data: null,
         };
       }
-
+      if (status === "cancelled") {
+        for (const item of order.order_details || []) {
+          const { book_id, qty } = item;
+          await Book.findByIdAndUpdate(
+            book_id,
+            { $inc: { qty: qty } },
+            { new: true }
+          );
+        }
+      }
       order.status = status;
       const updatedOrder = await order.save();
 
