@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import BookController from "../controllers/bookController";
+import { permissions } from "../middleware/checkAuth";
 
 // Configure multer to store files in memory
 const upload = multer({
@@ -19,9 +20,9 @@ const bookUpload = upload.fields([
 const route = express.Router();
 route.get("/all", BookController?.getAllBook);
 route.get("/view", BookController?.fetchBook);
-route.post("/create", bookUpload, BookController?.saveBook); //auth,role
-route.put("/update", bookUpload, BookController?.updateBook); //auth,role
-route.delete("/delete", BookController?.deleteBook); //auth,role
-route.post("/review", BookController.addReview);
+route.post("/create",permissions, bookUpload, BookController?.saveBook); //auth,role
+route.put("/update", permissions, bookUpload, BookController?.updateBook); //auth,role
+route.delete("/delete", permissions, BookController?.deleteBook); //auth,role
+route.post("/review", permissions, BookController.addReview);
 
 export default route;

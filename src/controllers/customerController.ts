@@ -104,7 +104,7 @@ const CustomerController = {
           dataStoredInToken,
           config.jwt_secret_key,
           {
-            expiresIn: 60 * 60,
+            expiresIn: 60 * 1000, // update as 60 * 60 * 1000
           }
         );
 
@@ -117,10 +117,8 @@ const CustomerController = {
         );
 
         res.cookie("accessToken", newAccessToken, {
-          maxAge: 60 * 60,
-          httpOnly: false, // allow reading from frontend (for debugging only)
-          secure: true, // required if you're using https
-          sameSite: "none",
+          maxAge: 60 * 1000, // update as 60 * 60 * 1000
+          httpOnly: true,
         });
 
         res.cookie("refreshToken", newRefreshToken, {
@@ -216,7 +214,7 @@ const CustomerController = {
           });
 
           res.cookie("accessToken", newAccessToken, {
-            maxAge: 60 * 60,
+            maxAge: 60 * 1000, // update as 60 * 60 * 1000
             httpOnly: true,
           });
         }
