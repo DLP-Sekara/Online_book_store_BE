@@ -94,7 +94,7 @@ const adminController = {
           dataStoredInToken,
           config.jwt_secret_key,
           {
-            expiresIn: 60 * 60,
+            expiresIn: 60 * 1000, // update as 60 * 60 * 1000
           }
         );
 
@@ -107,7 +107,7 @@ const adminController = {
         );
 
         res.cookie("accessToken", newAccessToken, {
-          maxAge: 60 * 60,
+          maxAge: 60 * 1000, // update as 60 * 60 * 1000
           httpOnly: true,
         });
 
@@ -159,7 +159,7 @@ const adminController = {
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    try {
+    try { 
       const secret = config.jwt_secret_key;
       const refToken = req.cookies.refreshToken;
 
@@ -183,11 +183,11 @@ const adminController = {
           };
 
           const newAccessToken = jwt.sign(dataStoredInToken, secret, {
-            expiresIn: 60 * 60,
+            expiresIn: 60 * 60 * 1000,
           });
 
           res.cookie("accessToken", newAccessToken, {
-            maxAge: 60 * 60,
+            maxAge: 60 * 1000, // update as 60 * 60 * 1000
             httpOnly: true,
           });
         }
