@@ -209,6 +209,7 @@ const BookController = {
         reviews,
         types,
         old_images,
+        old_pdf_file,
       } = req?.body;
       if (!title || !bookId) {
         return res.status(200).json({
@@ -221,7 +222,29 @@ const BookController = {
       // Get files from request if they exist
       let coverImages = (req as any).files?.["cover_images"] || [];
       let pdfFile = (req as any).files?.["pdf_file"]?.[0] || null;
-      let defaultReviews: any = [];
+
+      // Upload PDF if new one is provided
+      let uploadedPdfUrl: string | undefined;
+      if (pdfFile) {
+        uploadedPdfUrl = await uploadToAzureBlob(
+          pdfFile.buffer,
+          pdfFile.originalname,
+          pdfFile.mimetype
+        );
+      }
+
+      // Upload new images if provided
+      const uploadedImageUrls: string[] = [];
+      for (const image of coverImages) {
+        const imageUrl = await uploadToAzureBlob(
+          image.buffer,
+          image.originalname,
+          image.mimetype
+        );
+        uploadedImageUrls.push(imageUrl);
+      }
+      const finalCoverImages = [...old_images, ...uploadedImageUrls];
+
       const response: ApiResponse<any[]> = await BookService?.updateBookService(
         {
           _id: bookId,
@@ -231,18 +254,17 @@ const BookController = {
           ISBN_number,
           price,
           types,
-          cover_images: coverImages,
+          cover_images: finalCoverImages,
           status,
           publisher,
           pub_year,
           qty: parseInt(qty.toString()),
-          pdf_file: pdfFile,
+          pdf_file: uploadedPdfUrl ?? old_pdf_file,
           isAwarded: isAwarded ? isAwarded : false,
           rating,
           number_of_pages,
           format,
           reviews: [],
-          old_images,
         }
       );
       return res.status(200).json({
