@@ -362,6 +362,29 @@ const BookController = {
       next(error);
     }
   },
+
+  searchByImage: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const imageFile = req.file;
+      console.log(imageFile);
+      if (!imageFile)
+        return res.status(400).json({ message: "No image uploaded" });
+
+      const response = await BookService.searchBooksByImage(imageFile.buffer);
+
+      return res.status(200).json({
+        success: response?.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default BookController;
