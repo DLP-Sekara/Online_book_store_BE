@@ -7,6 +7,7 @@ import bookRoute from "./src/routes/bookRoute";
 import orderRoute from "./src/routes/orderRoute";
 import customerRoute from "./src/routes/customerRoute";
 import adminRoute from "./src/routes/adminRoute";
+import wishlistRoute from "./src/routes/wishlistRoute";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/book", bookRoute);
 app.use("/customer", customerRoute);
 app.use("/admin", adminRoute);
 app.use("/order", orderRoute);
+app.use("/wishlist", wishlistRoute);
 
 // MongoDB connection
 const url: any = process.env.DATABASE_URL;

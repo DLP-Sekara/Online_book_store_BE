@@ -104,7 +104,7 @@ const CustomerController = {
           dataStoredInToken,
           config.jwt_secret_key,
           {
-            expiresIn: 60 * 1000, // update as 60 * 60 * 1000
+            expiresIn: "15m", // 15 minutes
           }
         );
 
@@ -112,17 +112,17 @@ const CustomerController = {
           dataStoredInToken,
           config.jwt_secretRe_key,
           {
-            expiresIn: 60 * 60 * 24 * 1000,
+            expiresIn: "7d", // 7 days
           }
         );
 
         res.cookie("accessToken", newAccessToken, {
-          maxAge: 60 * 1000, // update as 60 * 60 * 1000
+          maxAge: 15 * 60 * 1000, // 15 minutes
           httpOnly: true,
         });
 
         res.cookie("refreshToken", newRefreshToken, {
-          maxAge: 60 * 60 * 24 * 1000,
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
           httpOnly: true,
         });
       }

@@ -119,30 +119,15 @@ const BookService = {
         pdf_file: data.pdf_file || null,
         type: data.types,
       };
-      // Handle cover images uploads (if any)
-      if (data.cover_images && data.cover_images.length > 0) {
-        const imageUploadPromises = data.cover_images.map((image) =>
-          uploadFileToCloudinary(image, "books/covers")
-        );
 
-        const imageUrls = await Promise.all(imageUploadPromises);
-        bookData.cover_images = imageUrls.filter((url) => url !== null);
-      } else {
-        bookData.cover_images = data?.old_images || [];
-      }
+      const finalCoverImages = [
+        ...(data.old_images || []),
+        ...(data.cover_images || []),
+      ];
+      bookData.cover_images = finalCoverImages;
 
-      // Handle PDF file upload (if any)
-      if (data.pdf_file) {
-        const pdfUrl = await uploadFileToCloudinary(
-          data.pdf_file,
-          "books/files"
-        );
-        if (pdfUrl) {
-          bookData.pdf_file = pdfUrl;
-        }
-      }
+      bookData.pdf_file = data.pdf_file || null;
 
-      // Update the book in the database
       const result = await BookRepository.updateBookRepo(bookData);
 
       return {
