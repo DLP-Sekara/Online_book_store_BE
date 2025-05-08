@@ -72,8 +72,7 @@ const BookController = {
           pdfFile.buffer,
           pdfFile.originalname,
           pdfFile.mimetype
-        );
-        console.log("UPDATED PDF URL", uploadedPdfUrl);
+        ); 
       }
 
       const uploadedImageUrls: string[] = [];
@@ -83,8 +82,7 @@ const BookController = {
           image.originalname,
           image.mimetype
         );
-        uploadedImageUrls.push(imageUrl);
-        console.log("IMAGE URLS", uploadedImageUrls);
+        uploadedImageUrls.push(imageUrl); 
       }
       const {
         title,
@@ -369,8 +367,7 @@ const BookController = {
     next: NextFunction
   ): Promise<any> => {
     try {
-      const imageFile = req.file;
-      console.log(imageFile);
+      const imageFile = req.file; 
       if (!imageFile)
         return res.status(400).json({ message: "No image uploaded" });
 

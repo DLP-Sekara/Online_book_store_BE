@@ -210,11 +210,11 @@ const CustomerController = {
           };
 
           const newAccessToken = jwt.sign(dataStoredInToken, secret, {
-            expiresIn: 60 * 60,
+            expiresIn: "15m", // 15 minutes
           });
 
           res.cookie("accessToken", newAccessToken, {
-            maxAge: 60 * 1000, // update as 60 * 60 * 1000
+            maxAge: 15 * 60 * 1000, // 15 minutes
             httpOnly: true,
           });
         }

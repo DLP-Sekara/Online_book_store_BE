@@ -199,10 +199,8 @@ const BookService = {
   },
 
   searchBooksByImage: async (imageBuffer: Buffer) => {
-    try {
-      console.log(imageBuffer);
-      const bookIds = await pythonMicroservice.getMatchedBookIds(imageBuffer);
-      console.log("Book IDs from Python service:", bookIds); 
+    try { 
+      const bookIds = await pythonMicroservice.getMatchedBookIds(imageBuffer); 
       const objectIds = bookIds.map((id) => new Types.ObjectId(id));
 
       const result = await BookRepository.fetchBookRepoByImage({
