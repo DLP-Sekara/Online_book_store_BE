@@ -8,6 +8,7 @@ import orderRoute from "./src/routes/orderRoute";
 import customerRoute from "./src/routes/customerRoute";
 import adminRoute from "./src/routes/adminRoute";
 import wishlistRoute from "./src/routes/wishlistRoute";
+import "./src/cronJobs/reminderJob";
 
 dotenv.config();
 

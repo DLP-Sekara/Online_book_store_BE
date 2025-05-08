@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { uploadToAzureBlob } from "../config/azureBlob";
 import { uploadFileToCloudinary } from "../config/script";
 import BookRepository from "../repositories/BookRepository";
@@ -9,6 +10,7 @@ import {
   saveBook,
 } from "../utils/interfaces/bookInterface";
 import { ApiResponse } from "../utils/interfaces/commonInterface";
+import pythonMicroservice from "./pythonMicroservice";
 
 const BookService = {
   getAllBookService: async (data: BookDetails): Promise<ApiResponse<any[]>> => {
@@ -182,6 +184,28 @@ const BookService = {
     try {
       const result = await BookRepository.addReviewRepo(review);
 
+      return {
+        success: result.success,
+        message: result.message,
+        data: result.data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  searchBooksByImage: async (imageBuffer: Buffer) => {
+    try { 
+      const bookIds = await pythonMicroservice.getMatchedBookIds(imageBuffer); 
+      const objectIds = bookIds.map((id) => new Types.ObjectId(id));
+
+      const result = await BookRepository.fetchBookRepoByImage({
+        _id: { $in: objectIds },
+      });
       return {
         success: result.success,
         message: result.message,

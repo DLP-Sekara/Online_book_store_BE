@@ -206,7 +206,7 @@ const BookRepository = {
   },
 
   updateBookRepo: async (data: saveBook): Promise<any> => {
-    try { 
+    try {
       const existBookByTitle = await Book.findOne({
         _id: { $ne: data._id }, // Exclude current book
         title: { $regex: new RegExp(`^${data.title}$`, "i") }, // Case-insensitive match
@@ -329,7 +329,7 @@ const BookRepository = {
   },
 
   addReviewRepo: async (review: BookReviews): Promise<any> => {
-    try { 
+    try {
       const book = await Book.findById({ _id: review?.bookId });
       if (!book) {
         return {
@@ -367,6 +367,23 @@ const BookRepository = {
         success: true,
         message: "Review added successfully!",
         data: book.reviews,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  },
+
+  fetchBookRepoByImage: async (filter: any) => {
+    try {
+      const books = await Book.find(filter);
+      return {
+        success: true,
+        message: "Books Fetched Successfully!",
+        data: books,
       };
     } catch (error: any) {
       return {

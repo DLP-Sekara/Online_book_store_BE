@@ -7,7 +7,7 @@ route.post("/signup", CustomerController?.saveCustomer);
 route.post("/signin", CustomerController?.loginCustomer);
 route.get("/logout", CustomerController?.logout);
 route.post("/refresh", CustomerController?.refresh);
-route.get("/details", permissions, CustomerController?.userDetail);
+route.get("/details", CustomerController?.userDetail);
 route.put("/update", permissions, CustomerController?.userDetailUpdate);
 route.delete("/delete", permissions, CustomerController?.deleteCustomer);
 
