@@ -1,0 +1,32 @@
+name: onlinebookstore-be
+
+on:
+  push:
+    branches:
+      - main  # Adjust if your deployment branch is different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project (optional if not using TS compile)
+        run: echo "No build step required for plain Node.js"
+
+      - name: onlinebookstore-be
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: onlinebookstore-be
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
